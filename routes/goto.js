@@ -38,7 +38,7 @@ router.post('/', async function (req, res) {
     let cookies = await page.cookies();
 
     let response = {};
-    response.contex_id = context_id;
+    response.context_id = context_id;
 
     if (!("closePage" in req.body) || req.body.closePage) {
         page.close();
