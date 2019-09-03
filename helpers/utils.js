@@ -57,3 +57,11 @@ exports.getBrowserPage = async function getBrowserPage(browser, context_id, page
         return await context.newPage();
     }
 };
+
+exports.perfomAction = async function perfomAction(request, action) {
+    let lock = request.app.get('lock');
+    let page = await getBrowserPage(request.app.get('browser'), request.query.context_id, request.query.page_id);
+    return lock.acquire(await page._target._targetId, async () => {
+        return action(page, request);
+    });
+};

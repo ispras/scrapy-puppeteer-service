@@ -4,7 +4,18 @@ const router = express.Router();
 
 /**
  * Content-Type: application/javascript
- * body = js function  as pattern "async function action(page) { ... some actions with page in puppeteer syntax};"
+ * body = js function  as pattern:
+ * async function action(page, request) {
+ *      ...
+ *      some actions with page in puppeteer syntax
+ *      ...
+ *      return {
+ *          context_id: page.browserContext()._id,
+ *          page_id: await page._target._targetId,
+            html: await page.content(),
+            cookies: await page.cookies()
+ *      };
+ * };
  */
 router.post('/', async function (req, res, next) {
 
@@ -16,25 +27,16 @@ router.post('/', async function (req, res, next) {
 
     try {
         eval(req.body.toString());
+
         //check action function exists
         if (!(typeof action === "function" && action.length >= 1)) {
             res.status("400");
             res.send("Valid action function: \"async function action(page) { ... some actions with page in puppeteer " +
                 "syntax};\"");
-            next();
-            return;
+            throw new Error("Invalid action function");
         }
 
-        let lock = req.app.get('lock');
-        let page = await utils.getBrowserPage(req.app.get('browser'), req.query.context_id, req.query.page_id);
-        let response = {};
-
-        await lock.acquire(await page._target._targetId, async () => {
-            await action(page);
-            response = await utils.formResponse(page, req.query.closePage);
-        });
-
-        console.log("page_id=" + response.page_id + "&context_id=" + response.context_id);
+        let response = await utils.perfomAction(req, action);
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(response));
     } catch (e) {

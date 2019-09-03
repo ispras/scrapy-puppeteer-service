@@ -3,10 +3,10 @@ const utils = require('../helpers/utils');
 const router = express.Router();
 
 
-async function action(page, params) {
+async function action(page, request) {
     return Promise.all([
-        page.waitFor(params.waitOptions.selectorOrTimeout),
-        page.click(params.selector, params.clickOptions),
+        page.waitFor(request.body.waitOptions.selectorOrTimeout),
+        page.click(request.body.selector, request.body.clickOptions),
     ]);
 }
 
@@ -33,27 +33,13 @@ router.post('/', async function (req, res, next) {
         res.send("No selector to click in request")
     }
 
-    utils.getBrowserPage(req.app.get('browser'), req.query.context_id, req.query.page_id)
-        .then(async (page) => {
-            req.app.get('lock').acquire(await page._target._targetId, () => {
-                action(page, req.body)
-                    .then(async () => {
-                        return utils.formResponse(page, req.query.closePage);
-                    }).catch(error => {
-                    // TODO Is this handler really needed?
-                    next(error);
-                });
-            })
-        })
-        .then(response => {
-            console.log("page_id=" + response.page_id + "&context_id=" + response.context_id);
-
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(response));
-        }).catch(function (error) {
-        next(error);
-    });
-
+    try {
+        let response = await utils.perfomAction(req, action);
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(response));
+    } catch (e) {
+        next(e);
+    }
 });
 
 module.exports = router;
