@@ -1,4 +1,4 @@
-# scrapy-puputeer-service
+# scrapy-puppeteer-service
 This is special service that runs puppeteer instances. 
 It is a part of [scrapy-pupeteer middleware](https://github.com/ispras/scrapy-puppeteer) that helps to handle javascript pages in [scrapy](https://github.com/scrapy/scrapy) using puppeteer. 
 This allows to scrape sites that require JS to function properly and to make the scraper more similar to humans.
