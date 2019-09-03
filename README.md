@@ -8,11 +8,20 @@ This allows to scrape sites that require JS to function properly and to make the
 This project is under development. Use it at your own risk.
 
 ## Usage 
-
-To start service run the docker container.
+On your host machine you should [enable user namespace cloning](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#recommended-enable-user-namespace-cloning).
 
 ```shell script
-$ docker run -p 3000:3000 scrapy-puppeteer-service
+sudo sysctl -w kernel.unprivileged_userns_clone=1
+```
+
+To start service run the docker container. 
+Since the Dockerfile adds a pptr user as a non-privileged user, it may not have all the necessary privileges.
+So you should use `docker run --cap-add=SYS_ADMIN` option.
+```shell script
+$ git clone https://github.com/ispras/scrapy-puppeteer-service.git
+$ cd scrapy-puputeer-service
+$ docker build -t scrapy-puppeter-service . 
+$ docker run -p 3000:3000 --name scrapy-puppeter-service --cap-add SYS_ADMIN scrapy-puppeter-service 
 ```
 
 
@@ -66,22 +75,22 @@ Simple example request body of goto:
 ```js
 async function action(page, request) {
     await page.goto(request.query.uri);
-    await page.close();
-    return { //return response that you want to see as result
+    let response = { //return response that you want to see as result
         context_id: page.browserContext()._id,
         page_id: await page._target._targetId,
         html: await page.content(),
         cookies: await page.cookies()
     };
+    await page.close();
+    return response;
  }
 ```
 
-
-
 ### **/screenshot**
 
-This method returns screenshots of current page more.  Description of options you can see on puppeteer github:
-https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions
+This method returns screenshots of current page more.  
+Description of options you can see on [puppeteer github](https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions).
+
                                                             
 Example request body:
 ```json5
