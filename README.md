@@ -107,7 +107,7 @@ Example request body:
 ## Notes on memory usage
 You need to explicitly close the browser tab once you don't need it (e.g. at the end of the parse method).
 
-##TODO
+## TODO
 
 - [x] skeleton that could handle goto, click, scroll, and actions.
 - [ ] proxy support for puppeteer
