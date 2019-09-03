@@ -4,10 +4,11 @@ const router = express.Router();
 
 
 async function action(page, request) {
-    await page.goto(request.body.url);
+    await page.hover(request.body.selector);
     return utils.formResponse(page, request.query.closePage);
 }
 
+// Method that scrolls page to a certain selector
 router.post('/', async function (req, res, next) {
     try {
         let lock = req.app.get('lock');
