@@ -17,7 +17,7 @@ const app = express();
 
 (async () => {
     //TODO add params for puppeteer launch
-    const browser = await puppeteer.launch({"headless": true});
+    const browser = await puppeteer.launch({"headless": true, "args": ['--no-sandbox', '--disable-setuid-sandbox']});
     app.set('browser', browser);
     app.set('lock', new AsyncLock());
 })();
