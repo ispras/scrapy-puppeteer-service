@@ -1,4 +1,4 @@
-async function getContext(browser, context_id) {
+async function findContextInBrowser(browser, context_id) {
 
     for (let context of browser.browserContexts()) {
         if (context_id === await context._id) {
@@ -8,7 +8,9 @@ async function getContext(browser, context_id) {
     throw "Context not found";
 }
 
-async function getPage(context, page_id) {
+
+
+async function findPageInContext(context, page_id) {
     for (let page of await context.pages()) {
         if (page_id === await page._target._targetId) {
             return page;
@@ -17,6 +19,12 @@ async function getPage(context, page_id) {
     throw "Page not found";
 }
 
+exports.closeContext = async function closeContext(request) {
+
+    //shared locks on contexts and exclusive on pages?
+    let context = await findContextInBrowser(request.app.get('browser'), request.query.context_id);
+    await context.close();
+};
 
 exports.formResponse = async function formResponse(page, closePage) {
     let response = {
@@ -47,10 +55,10 @@ exports.formResponse = async function formResponse(page, closePage) {
 exports.getBrowserPage = async function getBrowserPage(browser, context_id, page_id) {
 
     if (context_id && page_id) {
-        let context = await getContext(browser, context_id);
-        return await getPage(context, page_id);
+        let context = await findContextInBrowser(browser, context_id);
+        return await findPageInContext(context, page_id);
     } else if (context_id) {
-        let context = await getContext(browser, context_id);
+        let context = await findContextInBrowser(browser, context_id);
         return await context.newPage();
     } else {
         let context = await browser.createIncognitoBrowserContext();

@@ -2,12 +2,15 @@ const express = require('express');
 const utils = require('../helpers/utils');
 const router = express.Router();
 
+const DEFAULT_TIMEOUT = 1000;  // 1 second
 
 async function action(page, request) {
-    return Promise.all([
-        page.waitFor(request.body.waitOptions.selectorOrTimeout),
+    await Promise.all([
+        page.waitFor(request.body.waitOptions.selectorOrTimeout || DEFAULT_TIMEOUT),
         page.click(request.body.selector, request.body.clickOptions),
     ]);
+
+    return utils.formResponse(page, request.query.closePage);
 }
 
 /**
@@ -21,7 +24,7 @@ async function action(page, request) {
     "waitOptions": {
         // if selectorOrFunctionOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
         // if selectorOrFunctionOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
-        "selectorOrTimeout":...,
+        "selectorOrTimeout":... default 1,
     }
  }
  */
@@ -30,7 +33,8 @@ router.post('/', async function (req, res, next) {
     //TODO better request error handling
     if (!("selector" in req.body)) {
         res.status("400");
-        res.send("No selector to click in request")
+        res.send("No selector to click in request");
+        next();
     }
 
     try {

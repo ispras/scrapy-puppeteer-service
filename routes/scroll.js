@@ -23,6 +23,13 @@ async function action(page, request) {
 //     }
 //  }
 router.post('/', async function (req, res, next) {
+
+    if (!("selector" in req.body)) {
+        res.status("400");
+        res.send("No selector to scroll in request");
+        next();
+    }
+
     try {
         let response = await utils.perfomAction(req, action);
         res.setHeader('Content-Type', 'application/json');

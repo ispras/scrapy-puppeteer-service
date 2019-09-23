@@ -40,7 +40,14 @@ If you want to send request to this use page_id and context_id params in your ne
 
 This method allow to goto a page with a specific url in puppeteer.
 
-Params: url - the url which puppeteer should navigate to.
+Params: 
+
+url - the url which puppeteer should navigate to.      
+options - [possible options to use for request.](https://github.com/GoogleChrome/puppeteer/blob/v1.20.0/docs/api.md#pagegotourl-options)
+
+### **/back** and **/forward**
+This methods helps to navigate back and forward to see previously seen pages.
+ 
 
 ### **/click**
 
@@ -58,7 +65,23 @@ Example request body:
     "waitOptions": {
         // if selectorOrFunctionOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
         // if selectorOrFunctionOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
-        "selectorOrTimeout": 5,
+        "selectorOrTimeout": 5, //default timeout is 1000ms
+    }
+ }
+```
+
+### **/scroll**
+
+This method allow to scroll page to the first element that is matched by selector and returns page result.
+
+Example request body:
+```json5
+{
+    "selector": "", //<string> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+    "waitOptions": {
+        // if selectorOrFunctionOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
+        // if selectorOrFunctionOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+        "selectorOrTimeout": 5, //default timeout is 1000ms
     }
  }
 ```
@@ -90,7 +113,7 @@ async function action(page, request) {
 
 This method returns screenshots of current page more.  
 Description of options you can see on [puppeteer github](https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions).
-
+The path options is omitted in options. Also the only possibly encoding is `base64`.
                                                             
 Example request body:
 ```json5
@@ -103,6 +126,8 @@ Example request body:
  }
 ```
 
+### **/close_context**
+This method close browser context and all its pages. Be sure you finished all you requests to this context.
 
 ## Notes on memory usage
 You need to explicitly close the browser tab once you don't need it (e.g. at the end of the parse method).
