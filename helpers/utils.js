@@ -1,18 +1,16 @@
-async function findContextInBrowser(browser, context_id) {
+async function findContextInBrowser(browser, contextId) {
 
     for (let context of browser.browserContexts()) {
-        if (context_id === await context._id) {
+        if (contextId === await context._id) {
             return context;
         }
     }
     throw "Context not found";
 }
 
-
-
-async function findPageInContext(context, page_id) {
+async function findPageInContext(context, pageId) {
     for (let page of await context.pages()) {
-        if (page_id === await page._target._targetId) {
+        if (pageId === await page._target._targetId) {
             return page;
         }
     }
@@ -22,13 +20,13 @@ async function findPageInContext(context, page_id) {
 exports.closeContext = async function closeContext(request) {
 
     //shared locks on contexts and exclusive on pages?
-    let context = await findContextInBrowser(request.app.get('browser'), request.query.context_id);
+    let context = await findContextInBrowser(request.app.get('browser'), request.query.contextId);
     await context.close();
 };
 
 exports.formResponse = async function formResponse(page, closePage) {
     let response = {
-        context_id: page.browserContext()._id,
+        contextId: page.browserContext()._id,
         html: await page.content(),
         cookies: await page.cookies(),
     };
@@ -38,27 +36,27 @@ exports.formResponse = async function formResponse(page, closePage) {
     }
 
     if (!page.isClosed()) {
-        response.page_id = await page._target._targetId;
+        response.pageId = await page._target._targetId;
     }
 
     return response;
 };
 
 /***
- * This function returns a page from browser context or create new page or even context if page_id or context_id are
+ * This function returns a page from browser context or create new page or even context if pageId or contextId are
  * none. If no context or now page found throw an error.
  * @param browser
- * @param context_id - identifier of context to find.
- * @param page_id - identifier of page to find.
+ * @param contextId - identifier of context to find.
+ * @param pageId - identifier of page to find.
  * @returns {Promise<Page>}
  */
-exports.getBrowserPage = async function getBrowserPage(browser, context_id, page_id) {
+exports.getBrowserPage = async function getBrowserPage(browser, contextId, pageId) {
 
-    if (context_id && page_id) {
-        let context = await findContextInBrowser(browser, context_id);
-        return await findPageInContext(context, page_id);
-    } else if (context_id) {
-        let context = await findContextInBrowser(browser, context_id);
+    if (contextId && pageId) {
+        let context = await findContextInBrowser(browser, contextId);
+        return await findPageInContext(context, pageId);
+    } else if (contextId) {
+        let context = await findContextInBrowser(browser, contextId);
         return await context.newPage();
     } else {
         let context = await browser.createIncognitoBrowserContext();
@@ -68,7 +66,7 @@ exports.getBrowserPage = async function getBrowserPage(browser, context_id, page
 
 exports.perfomAction = async function perfomAction(request, action) {
     let lock = request.app.get('lock');
-    let page = await exports.getBrowserPage(request.app.get('browser'), request.query.context_id, request.query.page_id);
+    let page = await exports.getBrowserPage(request.app.get('browser'), request.query.contextId, request.query.pageId);
     return lock.acquire(await page._target._targetId, async () => {
         return action(page, request);
     });

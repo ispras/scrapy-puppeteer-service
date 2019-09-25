@@ -10,7 +10,7 @@ async function action(page, request) {
 
 router.post('/', async function (req, res, next) {
 
-    if (!req.query.context_id || !req.query.page_id) {
+    if (!req.query.contextId || !req.query.pageId) {
         res.status(400);
         res.send("No page in request");
         next();
