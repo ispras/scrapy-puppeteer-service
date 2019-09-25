@@ -28,6 +28,7 @@ router.post('/', async function (req, res, next) {
         res.status("400");
         res.send("No selector to scroll in request");
         next();
+        return;
     }
 
     try {

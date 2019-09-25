@@ -20,6 +20,14 @@ async function action(page, request) {
 //     "referer" <string> Referer header value. If provided it will take preference over the referer header value set by page.setExtraHTTPHeaders().
 // }
 router.post('/', async function (req, res, next) {
+
+    if (!req.body.url) {
+        res.status(400);
+        res.send("No URL provided in goto request");
+        next();
+        return;
+    }
+
     try {
         let response = await utils.perfomAction(req, action);
         res.send(response);

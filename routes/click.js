@@ -35,6 +35,7 @@ router.post('/', async function (req, res, next) {
         res.status("400");
         res.send("No selector to click in request");
         next();
+        return;
     }
 
     try {
