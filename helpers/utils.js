@@ -17,11 +17,15 @@ async function findPageInContext(context, pageId) {
     throw "Page not found";
 }
 
-exports.closeContext = async function closeContext(request) {
-
-    //shared locks on contexts and exclusive on pages?
-    let context = await findContextInBrowser(request.app.get('browser'), request.query.contextId);
-    await context.close();
+exports.closeContexts = async function closeContexts(browser, contextIds) {
+    // TODO shared locks on contexts and exclusive on pages?
+    let close_promises = [];
+    for (let context of browser.browserContexts()) {
+        if (contextIds.includes(context._id)) {
+            close_promises.push(context.close());
+        }
+    }
+    await Promise.all(close_promises);
 };
 
 exports.formResponse = async function formResponse(page, closePage) {
