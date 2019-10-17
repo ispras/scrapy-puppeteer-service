@@ -10,11 +10,8 @@ async function action(page, request) {
         promises.push(page.hover(request.body.selector));
     } else {
         promises.push(page.evaluate(() => {
-            // scroll down by window height
-            // XXX scroll up is necessary to trigger scroll event even at the bottom of a page
-            // XXX it helps when the scroll gets locked on some sites with ajax-loaded content
-            window.scrollBy(0, -1);
-            window.scrollBy(0, window.innerHeight);
+            // scroll down until the bottom of the page to trigger scroll event even at the bottom of a page
+            window.scrollBy(0, document.body.scrollHeight)
         }));
     }
     promises.push(page.waitFor(request.body.waitOptions.selectorOrTimeout || DEFAULT_TIMEOUT));
