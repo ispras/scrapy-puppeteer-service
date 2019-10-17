@@ -5,10 +5,19 @@ const router = express.Router();
 const DEFAULT_TIMEOUT = 1000;  // 1 second
 
 async function action(page, request) {
-    await Promise.all([
-        page.waitFor(request.body.waitOptions.selectorOrTimeout || DEFAULT_TIMEOUT),
-        page.hover(request.body.selector),
-    ]);
+    let promises = [];
+    if (request.body.selector) {
+        promises.push(page.hover(request.body.selector));
+    } else {
+        promises.push(page.evaluate(() => {
+            // scroll down until the bottom of the page to trigger scroll event even at the bottom of a page
+            window.scrollBy(0, document.body.scrollHeight)
+        }));
+    }
+    promises.push(page.waitFor(request.body.waitOptions.selectorOrTimeout || DEFAULT_TIMEOUT));
+
+    await Promise.all(promises);
+
     return utils.formResponse(page, request.query.closePage);
 }
 
@@ -23,14 +32,7 @@ async function action(page, request) {
 //     }
 //  }
 router.post('/', async function (req, res, next) {
-
-    if (!("selector" in req.body)) {
-        res.status("400");
-        res.send("No selector to scroll in request");
-        next();
-        return;
-    }
-
+    
     try {
         let response = await utils.perfomAction(req, action);
         res.setHeader('Content-Type', 'application/json');
