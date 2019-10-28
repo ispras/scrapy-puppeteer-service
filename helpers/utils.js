@@ -120,11 +120,11 @@ exports.perfomAction = async function perfomAction(request, action) {
     let page = await exports.getBrowserPage(request.app.get('browser'), request.query.contextId, request.query.pageId);
     return lock.acquire(await page._target._targetId, async () => {
 
-        if (!!request.body.headers) {
+        if ('body' in request && 'headers' in request.body) {
             await page.setExtraHTTPHeaders(request.body.headers);
         }
 
-        if (!!request.body.proxy) {
+        if ('body' in request && 'proxy' in request.body) {
             await page.setExtraHTTPHeaders({
                 'puppeteer-service-proxy-url': request.body.proxy
             });
