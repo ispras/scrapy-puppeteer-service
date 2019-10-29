@@ -26,7 +26,7 @@ app.set('PROXY_PORT', 8000);
         {
             "headless": false,
             args: [
-                 `--proxy-server=http://127.0.0.1:${app.get('PROXY_PORT')}`,
+                `--proxy-server=http://127.0.0.1:${app.get('PROXY_PORT')}`,
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
                 '--disable-accelerated-2d-canvas',
@@ -43,7 +43,7 @@ const server = new ProxyChain.Server({
     port: app.get('PROXY_PORT'),
 
     // Enables verbose logging
-    verbose: false,
+    verbose: true,
 
     prepareRequestFunction: ({
                                  request,
@@ -53,12 +53,11 @@ const server = new ProxyChain.Server({
                                  port,
                                  isHttp,
                              }) => {
-        if ('headers' in request && 'puppeteer-service-proxy-url' in request.headers) {
+        if (!!request.headers['puppeteer-service-proxy-url']) {
             let proxyUrl = request.headers['puppeteer-service-proxy-url'];
             delete request.headers['puppeteer-service-proxy-url'];
             return {'upstreamProxyUrl': proxyUrl};
         } else {
-            // Direct connection if no puppeteer-service-proxy-url header
             return {'upstreamProxyUrl': null};
         }
     },
