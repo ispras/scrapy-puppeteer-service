@@ -13,7 +13,10 @@ var http = require('http');
  */
 
 var port = normalizePort(process.env.PORT || '3000');
+var proxyPort = normalizePort(process.env.PROXY_PORT || '8080');
+
 app.set('port', port);
+app.set('proxyPort', proxyPort);
 
 /**
  * Create HTTP server.
@@ -82,9 +85,13 @@ function onError(error) {
  */
 
 function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string'
-        ? 'pipe ' + addr
-        : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+    app.onStart(app).then(() => {
+            const addr = server.address();
+            const bind = typeof addr === 'string'
+                ? 'pipe ' + addr
+                : 'port ' + addr.port;
+
+            debug('Express app listening on ' + bind);
+        }
+    )
 }
