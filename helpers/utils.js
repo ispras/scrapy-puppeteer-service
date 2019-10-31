@@ -1,5 +1,4 @@
-const ProxyAgent = require('proxy-agent');
-const fetch = require('node-fetch');
+const fetch = require('./fetcher');
 
 async function findContextInBrowser(browser, contextId) {
 
@@ -58,7 +57,7 @@ async function newPage(context) {
     page.on('request', async interceptedRequest => {
         const schemaType = new URL(interceptedRequest.url()).protocol;
 
-        if (!!interceptedRequest.headers()['puppeteer-service-proxy-url'] && ['http:', 'https:'].indexOf(schemaType) !== -1) {
+        if ('puppeteer-service-proxy-url' in interceptedRequest.headers() && ['http:', 'https:'].indexOf(schemaType) !== -1) {
             const options = {
                 method: interceptedRequest.method(),
                 headers: interceptedRequest.headers(),
@@ -67,16 +66,14 @@ async function newPage(context) {
 
             let proxy = options.headers['puppeteer-service-proxy-url'];
             delete options.headers['puppeteer-service-proxy-url'];
-            options.agent = new ProxyAgent(proxy);
 
-            fetch(interceptedRequest.url(), options)
+            fetch(interceptedRequest.url(), options, proxy)
                 .then(async (response) => {
-                    let body = await response.buffer();
                     interceptedRequest.respond({
                         status: response.statusCode,
                         contentType: response.headers['content-type'],
                         headers: response.headers,
-                        body: body,
+                        body: response.body,
                     });
                 })
                 .catch((err) => {
@@ -85,6 +82,7 @@ async function newPage(context) {
                         body: err.stack,
                     });
                 });
+
         } else {
             interceptedRequest.continue();
         }
