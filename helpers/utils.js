@@ -1,3 +1,5 @@
+const fetch = require('./fetcher');
+
 async function findContextInBrowser(browser, contextId) {
 
     for (let context of browser.browserContexts()) {
@@ -46,6 +48,49 @@ exports.formResponse = async function formResponse(page, closePage) {
     return response;
 };
 
+async function newPage(context) {
+    let page = await context.newPage();
+
+    await page.setRequestInterception(true);
+
+    // This is request interception in order to make request through proxies
+    page.on('request', async interceptedRequest => {
+        const schemaType = new URL(interceptedRequest.url()).protocol;
+
+        if ('puppeteer-service-proxy-url' in interceptedRequest.headers() && ['http:', 'https:'].indexOf(schemaType) !== -1) {
+            const options = {
+                method: interceptedRequest.method(),
+                headers: interceptedRequest.headers(),
+                body: interceptedRequest.postData(),
+            };
+
+            let proxy = options.headers['puppeteer-service-proxy-url'];
+            delete options.headers['puppeteer-service-proxy-url'];
+
+            fetch(interceptedRequest.url(), options, proxy)
+                .then(async (response) => {
+                    interceptedRequest.respond({
+                        status: response.statusCode,
+                        contentType: response.headers['content-type'],
+                        headers: response.headers,
+                        body: response.body,
+                    });
+                })
+                .catch((err) => {
+                    interceptedRequest.respond({
+                        status: 404,
+                        body: err.stack,
+                    });
+                });
+
+        } else {
+            interceptedRequest.continue();
+        }
+    });
+
+    return page;
+}
+
 /***
  * This function returns a page from browser context or create new page or even context if pageId or contextId are
  * none. If no context or now page found throw an error.
@@ -61,10 +106,10 @@ exports.getBrowserPage = async function getBrowserPage(browser, contextId, pageI
         return await findPageInContext(context, pageId);
     } else if (contextId) {
         let context = await findContextInBrowser(browser, contextId);
-        return await context.newPage();
+        return await newPage(context);
     } else {
         let context = await browser.createIncognitoBrowserContext();
-        return await context.newPage();
+        return await newPage(context);
     }
 };
 
@@ -72,6 +117,17 @@ exports.perfomAction = async function perfomAction(request, action) {
     let lock = request.app.get('lock');
     let page = await exports.getBrowserPage(request.app.get('browser'), request.query.contextId, request.query.pageId);
     return lock.acquire(await page._target._targetId, async () => {
+
+        if ('body' in request && 'headers' in request.body) {
+            await page.setExtraHTTPHeaders(request.body.headers);
+        }
+
+        if ('body' in request && 'proxy' in request.body) {
+            await page.setExtraHTTPHeaders({
+                'puppeteer-service-proxy-url': request.body.proxy
+            });
+        }
+
         return action(page, request);
     });
 };

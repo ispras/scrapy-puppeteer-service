@@ -36,6 +36,19 @@ In order to so you should send closePage=false in your previous request, that wo
 return its page_id. 
 If you want to send request to this use page_id and context_id params in your next request.
 
+If you want your requests on page make through proxy, just add to normal request "proxy" param. 
+Proxy username and password params are optional.
+Also you can add extra http headers to each request that is made on page.
+```json5
+{
+  //request params  
+  "proxy": "{protocol}://{username}:{password}@{proxy_ip}:{proxy_port}",
+  "headers": {
+    "My-Special-Header": "It's value."
+  }
+}
+```
+
 ### **/goto**
 
 This method allow to goto a page with a specific url in puppeteer.
@@ -135,7 +148,8 @@ You need to explicitly close the browser tab once you don't need it (e.g. at the
 ## TODO
 
 - [x] skeleton that could handle goto, click, scroll, and actions.
-- [ ] proxy support for puppeteer
+- [x] proxy support for puppeteer
+- [x] support of extra headers
 - [ ] error handling for requests
 - [ ] har support
 - [ ] scaling to several docker containers
