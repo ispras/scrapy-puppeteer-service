@@ -37,11 +37,12 @@ return its page_id.
 If you want to send request to this use page_id and context_id params in your next request.
 
 If you want your requests on page make through proxy, just add to normal request "proxy" param. 
+Proxy username and password params are optional.
 Also you can add extra http headers to each request that is made on page.
 ```json5
 {
   //request params  
-  "proxy": "{protocol}://{username}",
+  "proxy": "{protocol}://{username}:{password}@{proxy_ip}:{proxy_port}",
   "headers": {
     "My-Special-Header": "It's value."
   }

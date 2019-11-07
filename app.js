@@ -22,14 +22,7 @@ const app = express();
     //TODO add params for puppeteer launch
     const browser = await puppeteer.launch(
         {
-            "headless": true,
-            args: [
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--disable-gpu',
-                '--window-size=1920x1080',
-            ]
+            "headless": true
         });
     app.set('browser', browser);
     app.set('lock', new AsyncLock());

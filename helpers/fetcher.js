@@ -2,8 +2,8 @@ const ProxyAgent = require('proxy-agent');
 const node_fetch = require('node-fetch');
 
 
-fetch = async function fetch(url, options, proxy_url) {
-    options.agent = new ProxyAgent(proxy_url);
+fetch = async function fetch(url, options, proxyUrl) {
+    options.agent = new ProxyAgent(proxyUrl);
     let response = await node_fetch(url, options);
     let body = await response.buffer();
     return {
