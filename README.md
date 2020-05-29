@@ -80,8 +80,11 @@ Example request body:
         // if selectorOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
         // if selectorOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
         "selectorOrTimeout": 5, //default timeout is 1000ms
-    }
- }
+    },
+    "navigationOptions": { // use if click triggers navigation to other page; same as in goXXX methods
+        "waitUntil": "domcontentloaded",    
+    } 
+}
 ```
 
 ### **/scroll**
@@ -94,7 +97,7 @@ Example request body:
     "selector": "", //<string> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
     "waitOptions": {
         // if selectorOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
-        // if selectornOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+        // if selectorOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
         "selectorOrTimeout": 5, //default timeout is 1000ms
     }
  }
