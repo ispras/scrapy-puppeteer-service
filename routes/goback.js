@@ -4,8 +4,8 @@ const router = express.Router();
 
 
 async function action(page, request) {
-    await page.goBack(request.body.options);
-    return utils.formResponse(page, request.query.closePage);
+    await page.goBack(request.body.navigationOptions);
+    return utils.formResponse(page, request.query.closePage, request.body.waitOptions);
 }
 
 router.post('/', async function (req, res, next) {

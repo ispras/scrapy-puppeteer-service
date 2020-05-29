@@ -30,7 +30,20 @@ exports.closeContexts = async function closeContexts(browser, contextIds) {
     await Promise.all(close_promises);
 };
 
-exports.formResponse = async function formResponse(page, closePage) {
+async function wait(page, waitFor) {
+    if (waitFor instanceof Object) {
+        const {selectorOrTimeout, options} = waitFor;
+        if (selectorOrTimeout) {
+            await page.waitFor(selectorOrTimeout, options);
+        }
+    } else if (waitFor) {
+        await page.waitFor(waitFor);
+    }
+}
+
+exports.formResponse = async function formResponse(page, closePage, waitFor) {
+    await wait(page, waitFor);
+
     let response = {
         contextId: page.browserContext()._id,
         html: await page.content(),

@@ -56,7 +56,8 @@ This method allow to goto a page with a specific url in puppeteer.
 Params: 
 
 url - the url which puppeteer should navigate to.      
-options - [possible options to use for request.](https://github.com/GoogleChrome/puppeteer/blob/v1.20.0/docs/api.md#pagegotourl-options)
+navigationOptions - [possible options to use for request.](https://github.com/GoogleChrome/puppeteer/blob/v1.20.0/docs/api.md#pagegotourl-options)      
+waitOptions - [wait for selector or timeout](https://github.com/puppeteer/puppeteer/blob/v1.20.0/docs/api.md#pagewaitforselectororfunctionortimeout-options-args) after navigation completes, same as in click or scroll.
 
 ### **/back** and **/forward**
 This methods helps to navigate back and forward to see previously seen pages.
@@ -76,8 +77,8 @@ Example request body:
         "delay": 0 //<number> Time to wait between mousedown and mouseup in milliseconds. Defaults to 0.
     },
     "waitOptions": {
-        // if selectorOrFunctionOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
-        // if selectorOrFunctionOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+        // if selectorOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
+        // if selectorOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
         "selectorOrTimeout": 5, //default timeout is 1000ms
     }
  }
@@ -92,8 +93,8 @@ Example request body:
 {
     "selector": "", //<string> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
     "waitOptions": {
-        // if selectorOrFunctionOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
-        // if selectorOrFunctionOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+        // if selectorOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
+        // if selectornOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
         "selectorOrTimeout": 5, //default timeout is 1000ms
     }
  }

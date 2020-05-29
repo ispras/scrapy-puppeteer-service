@@ -5,12 +5,8 @@ const router = express.Router();
 const DEFAULT_TIMEOUT = 1000;  // 1 second
 
 async function action(page, request) {
-    await Promise.all([
-        page.waitFor(request.body.waitOptions.selectorOrTimeout || DEFAULT_TIMEOUT),
-        page.click(request.body.selector, request.body.clickOptions),
-    ]);
-
-    return utils.formResponse(page, request.query.closePage);
+    await page.click(request.body.selector, request.body.clickOptions);
+    return utils.formResponse(page, request.query.closePage, request.body.waitOptions || DEFAULT_TIMEOUT);
 }
 
 /**
@@ -22,8 +18,8 @@ async function action(page, request) {
         "delay" //<number> Time to wait between mousedown and mouseup in milliseconds. Defaults to 0.
     },
     "waitOptions": {
-        // if selectorOrFunctionOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
-        // if selectorOrFunctionOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+        // if selectorOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
+        // if selectorOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
         "selectorOrTimeout":... default 1,
     }
  }
