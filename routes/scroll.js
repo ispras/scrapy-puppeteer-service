@@ -5,20 +5,15 @@ const router = express.Router();
 const DEFAULT_TIMEOUT = 1000;  // 1 second
 
 async function action(page, request) {
-    let promises = [];
     if (request.body.selector) {
-        promises.push(page.hover(request.body.selector));
+        await page.hover(request.body.selector);
     } else {
-        promises.push(page.evaluate(() => {
+        await page.evaluate(() => {
             // scroll down until the bottom of the page to trigger scroll event even at the bottom of a page
             window.scrollBy(0, document.body.scrollHeight)
-        }));
+        });
     }
-    promises.push(page.waitFor(request.body.waitOptions.selectorOrTimeout || DEFAULT_TIMEOUT));
-
-    await Promise.all(promises);
-
-    return utils.formResponse(page, request.query.closePage);
+    return utils.formResponse(page, request.query.closePage, request.body.waitOptions || DEFAULT_TIMEOUT);
 }
 
 // Method that scrolls page to a certain selector.
