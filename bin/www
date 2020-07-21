@@ -22,6 +22,14 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
+ * Init default request timeout from environment.
+ * Default is Scrapy's default DOWNLOAD_TIMEOUT (3 minutes) + 10 seconds
+ */
+
+var timeout = parseInt(process.env.TIMEOUT)
+server.setTimeout(timeout > 0 ? timeout : 190000)
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 
