@@ -18,10 +18,7 @@ To start service run the docker container.
 Since the Dockerfile adds a pptr user as a non-privileged user, it may not have all the necessary privileges.
 So you should use `docker run --cap-add=SYS_ADMIN` option.
 ```shell script
-$ git clone https://github.com/ispras/scrapy-puppeteer-service.git
-$ cd scrapy-puputeer-service
-$ docker build -t scrapy-puppeter-service . 
-$ docker run -p 3000:3000 --name scrapy-puppeter-service --cap-add SYS_ADMIN scrapy-puppeter-service 
+$ docker run -d -p 3000:3000 --name scrapy-puppeter-service --cap-add SYS_ADMIN isprascrawlers/scrapy-puppeteer-service 
 ```
 
 
