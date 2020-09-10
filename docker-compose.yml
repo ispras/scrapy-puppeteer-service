@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  haproxy:
+    image: "haproxy"
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+
+  scrapy-puppeteer-service-1:
+    image: "isprascrawlers/scrapy-puppeteer-service"
+    environment:
+      TIMEOUT: 600000
+    cap_add:
+      - SYS_ADMIN
+    restart: always
+
+  scrapy-puppeteer-service-2:
+    image: "isprascrawlers/scrapy-puppeteer-service"
+    environment:
+      TIMEOUT: 600000
+    cap_add:
+      - SYS_ADMIN
+    restart: always

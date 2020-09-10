@@ -21,6 +21,10 @@ So you should use `docker run --cap-add=SYS_ADMIN` option.
 $ docker run -d -p 3000:3000 --name scrapy-puppeter-service --cap-add SYS_ADMIN isprascrawlers/scrapy-puppeteer-service 
 ```
 
+To run example which shows how to deploy several instances of service with load balancer use this command.
+```shell script
+$ docker-compose up -d
+```
 
 ## API
 
@@ -29,10 +33,9 @@ For All requests puppeteer browser creates new incognito browser context and new
 If your want to reuse your browser context simple send context_id in your query. 
 All request return their context ids in response. 
 Also you could reuse your browser page and more actions with it.
-In order to so you should send closePage=false in your previous request, that would made service save current page and 
-return its page_id. 
-If you want to send request to this use page_id and context_id params in your next request.
-
+In order to do so you should send in your request pageId that is returned in your previous request,
+that would make service reuse current page and return again its pageId. 
+If you want to close the page you are working with you should send in query param "closePage" with non-empty value.
 If you want your requests on page make through proxy, just add to normal request "proxy" param. 
 Proxy username and password params are optional.
 Also you can add extra http headers to each request that is made on page.
@@ -153,4 +156,4 @@ You need to explicitly close the browser tab once you don't need it (e.g. at the
 - [x] support of extra headers
 - [ ] error handling for requests
 - [ ] har support
-- [ ] scaling to several docker containers
+- [x] scaling to several docker containers
