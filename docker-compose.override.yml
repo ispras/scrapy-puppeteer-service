@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+
+  scrapy-puppeteer-service-1:
+    build:
+      context: .
+    ports:
+      - "3001:3000"
+
+  scrapy-puppeteer-service-2:
+    build:
+      context: .
+    ports:
+      - "3002:3000"

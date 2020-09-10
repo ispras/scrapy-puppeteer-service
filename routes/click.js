@@ -45,6 +45,7 @@ router.post('/', async function (req, res, next) {
     try {
         let response = await utils.perfomAction(req, action);
         res.setHeader('Content-Type', 'application/json');
+        res.header('scrapy-puppeteer-service-context-id', response.contextId);
         res.send(JSON.stringify(response));
     } catch (e) {
         next(e);
