@@ -131,16 +131,20 @@ exports.perfomAction = async function perfomAction(request, action) {
     let page = await exports.getBrowserPage(request.app.get('browser'), request.query.contextId, request.query.pageId);
     return lock.acquire(await page._target._targetId, async () => {
 
+        let extra_headers = {};
+
         if ('body' in request && 'headers' in request.body) {
-            await page.setExtraHTTPHeaders(request.body.headers);
+            extra_headers = { ...request.body.headers };
         }
 
         if ('body' in request && 'proxy' in request.body) {
-            await page.setExtraHTTPHeaders({
-                'puppeteer-service-proxy-url': request.body.proxy
-            });
+            extra_headers['puppeteer-service-proxy-url'] = request.body.proxy
         }
 
-        return action(page, request);
+        if (Object.keys(extra_headers).length !== 0) {
+            await page.setExtraHTTPHeaders(extra_headers);
+        }
+
+        return await action(page, request);
     });
 };
