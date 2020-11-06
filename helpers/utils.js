@@ -126,7 +126,7 @@ exports.getBrowserPage = async function getBrowserPage(browser, contextId, pageI
     }
 };
 
-exports.perfomAction = async function perfomAction(request, action) {
+exports.performAction = async function performAction(request, action) {
     let lock = request.app.get('lock');
     let page = await exports.getBrowserPage(request.app.get('browser'), request.query.contextId, request.query.pageId);
     return lock.acquire(await page._target._targetId, async () => {

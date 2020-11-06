@@ -29,7 +29,7 @@ async function action(page, request) {
 router.post('/', async function (req, res, next) {
     
     try {
-        let response = await utils.perfomAction(req, action);
+        let response = await utils.performAction(req, action);
         res.header('scrapy-puppeteer-service-context-id', response.contextId);
         res.send(response);
     } catch (e) {
