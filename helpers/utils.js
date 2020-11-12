@@ -1,4 +1,4 @@
-const fetch = require('./fetcher');
+const { proxyRequest } = require('puppeteer-proxy');
 
 async function findContextInBrowser(browser, contextId) {
 
@@ -67,37 +67,12 @@ async function newPage(context) {
     await page.setRequestInterception(true);
 
     // This is request interception in order to make request through proxies
-    page.on('request', async interceptedRequest => {
-        const schemaType = new URL(interceptedRequest.url()).protocol;
-
-        if ('puppeteer-service-proxy-url' in interceptedRequest.headers() && ['http:', 'https:'].indexOf(schemaType) !== -1) {
-            const options = {
-                method: interceptedRequest.method(),
-                headers: interceptedRequest.headers(),
-                body: interceptedRequest.postData(),
-            };
-
-            let proxy = options.headers['puppeteer-service-proxy-url'];
-            delete options.headers['puppeteer-service-proxy-url'];
-
-            fetch(interceptedRequest.url(), options, proxy)
-                .then(async (response) => {
-                    interceptedRequest.respond({
-                        status: response.statusCode,
-                        contentType: response.headers['content-type'],
-                        headers: response.headers,
-                        body: response.body,
-                    });
-                })
-                .catch((err) => {
-                    interceptedRequest.respond({
-                        status: 404,
-                        body: err.stack,
-                    });
-                });
-
+    page.on('request', async request => {
+        const { proxyUrl } = page;
+        if (proxyUrl) {
+            proxyRequest({ page, proxyUrl, request });
         } else {
-            interceptedRequest.continue();
+            request.continue();
         }
     });
 
@@ -138,7 +113,7 @@ exports.performAction = async function performAction(request, action) {
         }
 
         if ('body' in request && 'proxy' in request.body) {
-            extraHeaders['puppeteer-service-proxy-url'] = request.body.proxy
+            page.proxyUrl = request.body.proxy;
         }
 
         if ('cookie' in extraHeaders) {
