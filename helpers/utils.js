@@ -1,4 +1,5 @@
 const { proxyRequest } = require('puppeteer-proxy');
+const PAGE_PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
 async function findContextInBrowser(browser, contextId) {
 
@@ -68,7 +69,7 @@ async function newPage(context) {
 
     // This is request interception in order to make request through proxies
     page.on('request', async request => {
-        const { proxyUrl } = page;
+        const { [PAGE_PROXY_URL_KEY]: proxyUrl } = page;
         if (proxyUrl) {
             proxyRequest({ page, proxyUrl, request });
         } else {
@@ -102,10 +103,10 @@ exports.getBrowserPage = async function getBrowserPage(browser, contextId, pageI
 };
 
 exports.performAction = async function performAction(request, action) {
-    let lock = request.app.get('lock');
-    let page = await exports.getBrowserPage(request.app.get('browser'), request.query.contextId, request.query.pageId);
+    const { contextId, pageId } = request.query;
+    const lock = request.app.get('lock');
+    const page = await exports.getBrowserPage(request.app.get('browser'), contextId, pageId);
     return lock.acquire(await page._target._targetId, async () => {
-
         let extraHeaders = {};
 
         if ('body' in request && 'headers' in request.body) {
@@ -113,10 +114,12 @@ exports.performAction = async function performAction(request, action) {
         }
 
         if ('body' in request && 'proxy' in request.body) {
-            page.proxyUrl = request.body.proxy;
+            // TODO maybe we should map page ids to proxies instead
+            page[PAGE_PROXY_URL_KEY] = request.body.proxy;
         }
 
         if ('cookie' in extraHeaders) {
+            // TODO set cookies from request body like headers
             const url = request.body.url || page.url()
             const cookies = extraHeaders.cookie.split(';').map(s => {
                 const [name, value] = s.trim().split(/=(.*)/, 2);
