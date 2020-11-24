@@ -1,4 +1,5 @@
-const fetch = require('./fetcher');
+const { proxyRequest } = require('puppeteer-proxy');
+const PAGE_PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
 async function findContextInBrowser(browser, contextId) {
 
@@ -67,37 +68,12 @@ async function newPage(context) {
     await page.setRequestInterception(true);
 
     // This is request interception in order to make request through proxies
-    page.on('request', async interceptedRequest => {
-        const schemaType = new URL(interceptedRequest.url()).protocol;
-
-        if ('puppeteer-service-proxy-url' in interceptedRequest.headers() && ['http:', 'https:'].indexOf(schemaType) !== -1) {
-            const options = {
-                method: interceptedRequest.method(),
-                headers: interceptedRequest.headers(),
-                body: interceptedRequest.postData(),
-            };
-
-            let proxy = options.headers['puppeteer-service-proxy-url'];
-            delete options.headers['puppeteer-service-proxy-url'];
-
-            fetch(interceptedRequest.url(), options, proxy)
-                .then(async (response) => {
-                    interceptedRequest.respond({
-                        status: response.statusCode,
-                        contentType: response.headers['content-type'],
-                        headers: response.headers,
-                        body: response.body,
-                    });
-                })
-                .catch((err) => {
-                    interceptedRequest.respond({
-                        status: 404,
-                        body: err.stack,
-                    });
-                });
-
+    page.on('request', async request => {
+        const { [PAGE_PROXY_URL_KEY]: proxyUrl } = page;
+        if (proxyUrl) {
+            proxyRequest({ page, proxyUrl, request });
         } else {
-            interceptedRequest.continue();
+            request.continue();
         }
     });
 
@@ -126,23 +102,35 @@ exports.getBrowserPage = async function getBrowserPage(browser, contextId, pageI
     }
 };
 
-exports.perfomAction = async function perfomAction(request, action) {
-    let lock = request.app.get('lock');
-    let page = await exports.getBrowserPage(request.app.get('browser'), request.query.contextId, request.query.pageId);
+exports.performAction = async function performAction(request, action) {
+    const { contextId, pageId } = request.query;
+    const lock = request.app.get('lock');
+    const page = await exports.getBrowserPage(request.app.get('browser'), contextId, pageId);
     return lock.acquire(await page._target._targetId, async () => {
-
-        let extra_headers = {};
+        let extraHeaders = {};
 
         if ('body' in request && 'headers' in request.body) {
-            extra_headers = { ...request.body.headers };
+            extraHeaders = { ...request.body.headers };
         }
 
         if ('body' in request && 'proxy' in request.body) {
-            extra_headers['puppeteer-service-proxy-url'] = request.body.proxy
+            // TODO maybe we should map page ids to proxies instead
+            page[PAGE_PROXY_URL_KEY] = request.body.proxy;
         }
 
-        if (Object.keys(extra_headers).length !== 0) {
-            await page.setExtraHTTPHeaders(extra_headers);
+        if ('cookie' in extraHeaders) {
+            // TODO set cookies from request body like headers
+            const url = request.body.url || page.url()
+            const cookies = extraHeaders.cookie.split(';').map(s => {
+                const [name, value] = s.trim().split(/=(.*)/, 2);
+                return { name, value, url };
+            });
+            delete extraHeaders.cookie;
+            await page.setCookie(...cookies);
+        }
+
+        if (Object.keys(extraHeaders).length !== 0) {
+            await page.setExtraHTTPHeaders(extraHeaders);
         }
 
         return await action(page, request);
