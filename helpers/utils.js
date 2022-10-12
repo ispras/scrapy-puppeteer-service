@@ -62,6 +62,28 @@ exports.formResponse = async function formResponse(page, closePage, waitFor) {
     return response;
 };
 
+exports.formScrapeResponse = async function formResponse(page, closePage, waitFor, data) {
+    await wait(page, waitFor);
+
+    console.log(data)
+    let response = {
+        contextId: page.browserContext()._id,
+        html: await page.content(),
+        cookies: await page.cookies(),
+        data: data
+    };
+
+    if (closePage) {
+        await page.close();
+    }
+
+    if (!page.isClosed()) {
+        response.pageId = await page._target._targetId;
+    }
+
+    return response;
+};
+
 async function newPage(context) {
     let page = await context.newPage();
 

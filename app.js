@@ -26,7 +26,7 @@ const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
     //TODO add params for puppeteer launch
     const browser = await puppeteer.launch(
         {
-            headless: true,
+            headless: false,
             defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT }
         });
     app.set('browser', browser);
