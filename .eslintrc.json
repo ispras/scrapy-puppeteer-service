@@ -1,0 +1,124 @@
+{
+	"globals": {
+		"local": "readonly"
+	},
+	"env": {
+		"node": true,
+		"commonjs": true,
+		"es2020": true,
+		"browser": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 2020,
+		"sourceType": "module"
+	},
+	"plugins": [
+		"@typescript-eslint"
+	],
+	"ignorePatterns": [
+		// number of JSON files contain incorrect naming patterns etc
+		"**/*.json"
+	],
+	"rules": {
+		"@typescript-eslint/no-var-requires": [
+			"off"
+		],
+		"@typescript-eslint/consistent-type-imports": [
+			"warn",
+			{
+				"prefer": "type-imports"
+			}
+		],
+		"@typescript-eslint/ban-ts-comment": [
+			"warn"
+		],
+		"@typescript-eslint/no-inferrable-types": [
+			"warn",
+			{
+				"ignoreParameters": true,
+				"ignoreProperties": true
+			}
+		],
+		// eslint and tsc already flag these rules
+		"@typescript-eslint/no-empty-function": [
+			"off"
+		],
+		"@typescript-eslint/no-unused-vars": [
+			"off"
+		],
+		"default-case": 2,
+		"default-case-last": 2,
+		"default-param-last": 2,
+		"no-empty-function": [
+			"warn",
+			{
+				"allow": [
+					"constructors"
+				]
+			}
+		],
+		"no-var": 2,
+		"prefer-arrow-callback": 2,
+		"prefer-const": 2,
+		"object-curly-spacing": [
+			"warn",
+			"always"
+		],
+		"no-empty": [
+			"warn"
+		],
+		"indent": [
+			"warn",
+			"tab",
+			{
+				"SwitchCase": 1
+			}
+		],
+		"linebreak-style": [
+			"warn",
+			"windows"
+		],
+		"quotes": [
+			"warn",
+			"double"
+		],
+		"semi": [
+			"warn",
+			"never"
+		],
+		"brace-style": [
+			"warn",
+			"stroustrup",
+			{
+				"allowSingleLine": true
+			}
+		],
+		"keyword-spacing": [
+			"warn"
+		],
+		"space-infix-ops": [
+			"warn",
+			{
+				"int32Hint": true
+			}
+		],
+		"no-unused-vars": [
+			"warn",
+			{
+				"args": "none"
+			}
+		],
+		"no-constant-condition": [
+			"error",
+			{
+				"checkLoops": false
+			}
+		]
+	}
+}
