@@ -1,6 +1,6 @@
-const express = require('express');
-const utils = require('../helpers/utils');
-const router = express.Router();
+const express = require("express")
+const utils = require("../helpers/utils")
+const router = express.Router()
 
 /**
  * Content-Type: application/javascript
@@ -17,32 +17,33 @@ const router = express.Router();
  *      };
  * };
  */
-router.post('/', async function (req, res, next) {
+router.post("/", async (req, res, next) => {
 
-    //TODO better request error handling
-    // if (!("action" in req.body)) {
-    //     res.status("400");
-    //     res.send("No action in request")
-    // }
+	//TODO better request error handling
+	// if (!("action" in req.body)) {
+	//     res.status("400");
+	//     res.send("No action in request")
+	// }
 
-    try {
-        eval(req.body.toString());
+	try {
+		eval(req.body.toString())
 
-        //check action function exists
-        if (!(typeof action === "function" && action.length >= 1)) {
-            res.status("400");
-            res.send("Valid action function: \"async function action(page) { ... some actions with page in puppeteer " +
-                "syntax};\"");
-            throw new Error("Invalid action function");
-        }
+		//check action function exists
+		if (!(typeof action === "function" && action.length >= 1)) {
+			res.status("400")
+			res.send("Valid action function: \"async function action(page) { ... some actions with page in puppeteer " +
+                "syntax};\"")
+			throw new Error("Invalid action function")
+		}
 
-        let response = await utils.performAction(req, action);
-        res.header('scrapy-puppeteer-service-context-id', response.contextId);
-        res.send(response);
-    } catch (e) {
-        next(e);
-    }
+		const response = await utils.performAction(req, action)
+		res.header("scrapy-puppeteer-service-context-id", response.contextId)
+		res.send(response)
+	}
+	catch (e) {
+		next(e)
+	}
 
-});
+})
 
-module.exports = router;
+module.exports = router

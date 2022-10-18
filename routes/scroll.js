@@ -1,19 +1,20 @@
-const express = require('express');
-const utils = require('../helpers/utils');
-const router = express.Router();
+const express = require("express")
+const utils = require("../helpers/utils")
+const router = express.Router()
 
-const DEFAULT_TIMEOUT = 1000;  // 1 second
+const DEFAULT_TIMEOUT = 1000  // 1 second
 
 async function action(page, request) {
-    if (request.body.selector) {
-        await page.hover(request.body.selector);
-    } else {
-        await page.evaluate(() => {
-            // scroll down until the bottom of the page to trigger scroll event even at the bottom of a page
-            window.scrollBy(0, document.body.scrollHeight)
-        });
-    }
-    return utils.formResponse(page, request.query.closePage, request.body.waitOptions || DEFAULT_TIMEOUT);
+	if (request.body.selector) {
+		await page.hover(request.body.selector)
+	}
+	else {
+		await page.evaluate(() => {
+			// scroll down until the bottom of the page to trigger scroll event even at the bottom of a page
+			window.scrollBy(0, document.body.scrollHeight)
+		})
+	}
+	return utils.formResponse(page, request.query.closePage, request.body.waitOptions || DEFAULT_TIMEOUT)
 }
 
 // Method that scrolls page to a certain selector.
@@ -26,15 +27,16 @@ async function action(page, request) {
 //         "selectorOrTimeout":...,
 //     }
 //  }
-router.post('/', async function (req, res, next) {
+router.post("/", async (req, res, next) => {
     
-    try {
-        let response = await utils.performAction(req, action);
-        res.header('scrapy-puppeteer-service-context-id', response.contextId);
-        res.send(response);
-    } catch (e) {
-        next(e);
-    }
-});
+	try {
+		const response = await utils.performAction(req, action)
+		res.header("scrapy-puppeteer-service-context-id", response.contextId)
+		res.send(response)
+	}
+	catch (e) {
+		next(e)
+	}
+})
 
-module.exports = router;
+module.exports = router
