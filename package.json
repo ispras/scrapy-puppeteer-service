@@ -3,8 +3,8 @@
   "version": "0.0.6",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
-	"build": "tsc -b .",
+    "start": "node ./src/bin/www",
+	"build": "tsc",
 	"lint": "eslint .",
 	"lint:fix": "eslint . --fix"
   },
