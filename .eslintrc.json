@@ -1,7 +1,4 @@
 {
-	"globals": {
-		"local": "readonly"
-	},
 	"env": {
 		"node": true,
 		"commonjs": true,
@@ -20,10 +17,6 @@
 	},
 	"plugins": [
 		"@typescript-eslint"
-	],
-	"ignorePatterns": [
-		// number of JSON files contain incorrect naming patterns etc
-		"**/*.json"
 	],
 	"rules": {
 		"@typescript-eslint/no-var-requires": [
