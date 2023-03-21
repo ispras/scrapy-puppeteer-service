@@ -20,18 +20,25 @@ const closeContextRouter = require('./routes/close_context');
 const app = express();
 
 const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
+const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
 
 async function setupBrowser() {
-  //TODO add params for puppeteer launch
-    const browser = await puppeteer.launch(
-      {
-        headless: HEADLESS,
-        defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT }
-      });
-    browser.on('disconnected', setupBrowser);
-    app.set('browser', browser);
+    try {
+        //TODO add more params for puppeteer launch
+        const browser = await puppeteer.launch(
+            {
+                headless: HEADLESS,
+                defaultViewport: {width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT},
+                timeout: CONNECT_TIMEOUT
+            });
+        browser.on('disconnected', setupBrowser);
+        app.set('browser', browser);
+    } catch (error) {
+        console.error('Failed to start browser:', error);
+        process.exit(1);
+    }
 }
 
 (async () => {
