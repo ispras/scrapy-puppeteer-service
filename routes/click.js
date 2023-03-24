@@ -5,6 +5,7 @@ const router = express.Router();
 const DEFAULT_TIMEOUT = 1000;  // 1 second
 
 async function action(page, request) {
+    await page.hover(request.body.selector);
     if (request.body.navigationOptions) {
         await Promise.all([
             page.waitForNavigation(request.body.navigationOptions),
