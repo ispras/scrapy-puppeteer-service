@@ -10,8 +10,8 @@ const router = express.Router();
  *      some actions with page in puppeteer syntax
  *      ...
  *      return {
- *          context_id: page.browserContext()._id,
- *          page_id: await page._target._targetId,
+ *          context_id: page.browserContext().id,
+ *          page_id: page.target()._targetId,
             html: await page.content(),
             cookies: await page.cookies()
  *      };

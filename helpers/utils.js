@@ -1,10 +1,9 @@
-const { proxyRequest } = require('puppeteer-proxy');
+const {proxyRequest} = require('puppeteer-proxy');
 const PAGE_PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
 async function findContextInBrowser(browser, contextId) {
-
-    for (let context of browser.browserContexts()) {
-        if (contextId === await context._id) {
+    for (const context of browser.browserContexts()) {
+        if (contextId === context.id) {
             return context;
         }
     }
@@ -12,8 +11,8 @@ async function findContextInBrowser(browser, contextId) {
 }
 
 async function findPageInContext(context, pageId) {
-    for (let page of await context.pages()) {
-        if (pageId === await page._target._targetId) {
+    for (const page of await context.pages()) {
+        if (pageId === page.target()._targetId) {
             return page;
         }
     }
@@ -22,31 +21,44 @@ async function findPageInContext(context, pageId) {
 
 exports.closeContexts = async function closeContexts(browser, contextIds) {
     // TODO shared locks on contexts and exclusive on pages?
-    let close_promises = [];
-    for (let context of browser.browserContexts()) {
-        if (contextIds.includes(context._id)) {
-            close_promises.push(context.close());
+    const closePromises = [];
+    for (const context of browser.browserContexts()) {
+        if (contextIds.includes(context.id)) {
+            closePromises.push(context.close());
         }
     }
-    await Promise.all(close_promises);
+    await Promise.all(closePromises);
 };
 
-async function wait(page, waitFor) {
-    if (waitFor instanceof Object) {
-        const {selectorOrTimeout, options} = waitFor;
-        if (selectorOrTimeout) {
-            await page.waitFor(selectorOrTimeout, options);
-        }
-    } else if (waitFor) {
-        await page.waitFor(waitFor);
+async function wait(page, waitFor, options = {}) {
+    // TODO This mimics old page.waitFor behaviour.
+    //  Instead we should update our API to support explicit waiting on selector/xpath/timeout.
+
+    if (!waitFor) {
+        return;
     }
+    if (waitFor instanceof Object) {
+        const {selectorOrTimeout, options: moreOptions} = waitFor;
+        return wait(page, selectorOrTimeout, {...options, ...moreOptions});
+    }
+    if (!isNaN(waitFor)) {
+        return new Promise(resolve => setTimeout(resolve, waitFor));
+    }
+    if (typeof waitFor === 'string') {
+        if (waitFor.startsWith('//')) {
+            return page.waitForXPath(waitFor, options);
+        } else {
+            return page.waitForSelector(waitFor, options);
+        }
+    }
+    throw `Can't wait on ${typeof waitFor}`;
 }
 
 exports.formResponse = async function formResponse(page, closePage, waitFor) {
     await wait(page, waitFor);
 
-    let response = {
-        contextId: page.browserContext()._id,
+    const response = {
+        contextId: page.browserContext().id,
         html: await page.content(),
         cookies: await page.cookies(),
     };
@@ -56,22 +68,22 @@ exports.formResponse = async function formResponse(page, closePage, waitFor) {
     }
 
     if (!page.isClosed()) {
-        response.pageId = await page._target._targetId;
+        response.pageId = page.target()._targetId;
     }
 
     return response;
 };
 
 async function newPage(context) {
-    let page = await context.newPage();
+    const page = await context.newPage();
 
     await page.setRequestInterception(true);
 
     // This is request interception in order to make request through proxies
     page.on('request', async request => {
-        const { [PAGE_PROXY_URL_KEY]: proxyUrl } = page;
+        const {[PAGE_PROXY_URL_KEY]: proxyUrl} = page;
         if (proxyUrl) {
-            proxyRequest({ page, proxyUrl, request });
+            proxyRequest({page, proxyUrl, request});
         } else {
             request.continue();
         }
@@ -89,28 +101,27 @@ async function newPage(context) {
  * @returns {Promise<Page>}
  */
 exports.getBrowserPage = async function getBrowserPage(browser, contextId, pageId) {
-
     if (contextId && pageId) {
-        let context = await findContextInBrowser(browser, contextId);
+        const context = await findContextInBrowser(browser, contextId);
         return await findPageInContext(context, pageId);
     } else if (contextId) {
-        let context = await findContextInBrowser(browser, contextId);
+        const context = await findContextInBrowser(browser, contextId);
         return await newPage(context);
     } else {
-        let context = await browser.createIncognitoBrowserContext();
+        const context = await browser.createIncognitoBrowserContext();
         return await newPage(context);
     }
 };
 
 exports.performAction = async function performAction(request, action) {
-    const { contextId, pageId } = request.query;
+    const {contextId, pageId} = request.query;
     const lock = request.app.get('lock');
     const page = await exports.getBrowserPage(request.app.get('browser'), contextId, pageId);
-    return lock.acquire(await page._target._targetId, async () => {
+    return lock.acquire(page.target()._targetId, async () => {
         let extraHeaders = {};
 
         if ('body' in request && 'headers' in request.body) {
-            extraHeaders = { ...request.body.headers };
+            extraHeaders = {...request.body.headers};
         }
 
         if ('body' in request && 'proxy' in request.body) {
@@ -123,7 +134,7 @@ exports.performAction = async function performAction(request, action) {
             const url = request.body.url || page.url()
             const cookies = extraHeaders.cookie.split(';').map(s => {
                 const [name, value] = s.trim().split(/=(.*)/, 2);
-                return { name, value, url };
+                return {name, value, url};
             });
             delete extraHeaders.cookie;
             await page.setCookie(...cookies);

@@ -116,8 +116,8 @@ Simple example request body of goto:
 async function action(page, request) {
     await page.goto(request.query.uri);
     let response = { //return response that you want to see as result
-        context_id: page.browserContext()._id,
-        page_id: await page._target._targetId,
+        context_id: page.browserContext().id,
+        page_id: page.target()._targetId,
         html: await page.content(),
         cookies: await page.cookies()
     };
