@@ -1,6 +1,3 @@
-const { proxyRequest } = require('puppeteer-proxy');
-const PAGE_PROXY_URL_KEY = 'puppeteer-service-proxy-url'
-
 async function findContextInBrowser(browser, contextId) {
 
     for (let context of browser.browserContexts()) {
@@ -62,60 +59,46 @@ exports.formResponse = async function formResponse(page, closePage, waitFor) {
     return response;
 };
 
-async function newPage(context) {
-    let page = await context.newPage();
-
-    await page.setRequestInterception(true);
-
-    // This is request interception in order to make request through proxies
-    page.on('request', async request => {
-        const { [PAGE_PROXY_URL_KEY]: proxyUrl } = page;
-        if (proxyUrl) {
-            proxyRequest({ page, proxyUrl, request });
-        } else {
-            request.continue();
-        }
-    });
-
-    return page;
+function getProxy(request) {
+    if ('body' in request && 'proxy' in request.body) {
+        return new URL(request.body.proxy);
+    }
 }
 
 /***
  * This function returns a page from browser context or create new page or even context if pageId or contextId are
  * none. If no context or now page found throw an error.
  * @param browser
- * @param contextId - identifier of context to find.
- * @param pageId - identifier of page to find.
+ * @param request
  * @returns {Promise<Page>}
  */
-exports.getBrowserPage = async function getBrowserPage(browser, contextId, pageId) {
-
-    if (contextId && pageId) {
-        let context = await findContextInBrowser(browser, contextId);
-        return await findPageInContext(context, pageId);
-    } else if (contextId) {
-        let context = await findContextInBrowser(browser, contextId);
-        return await newPage(context);
-    } else {
-        let context = await browser.createIncognitoBrowserContext();
-        return await newPage(context);
+exports.getBrowserPage = async function getBrowserPage(browser, request) {
+    const { contextId, pageId } = request.query;
+    if (contextId) {
+        const context = await findContextInBrowser(browser, contextId);
+        return pageId ? findPageInContext(context, pageId) : context.newPage();
     }
+    const proxy = getProxy(request);
+    const contextOptions = proxy ? { proxyServer: proxy.origin } : undefined;
+    const context = await browser.createIncognitoBrowserContext(contextOptions);
+    const page = await context.newPage();
+    if (proxy && proxy.username) {
+        await page.authenticate({
+            username: proxy.username,
+            password: proxy.password
+        });
+    }
+    return page;
 };
 
 exports.performAction = async function performAction(request, action) {
-    const { contextId, pageId } = request.query;
     const lock = request.app.get('lock');
-    const page = await exports.getBrowserPage(request.app.get('browser'), contextId, pageId);
+    const page = await exports.getBrowserPage(request.app.get('browser'), request);
     return lock.acquire(await page._target._targetId, async () => {
         let extraHeaders = {};
 
         if ('body' in request && 'headers' in request.body) {
             extraHeaders = { ...request.body.headers };
-        }
-
-        if ('body' in request && 'proxy' in request.body) {
-            // TODO maybe we should map page ids to proxies instead
-            page[PAGE_PROXY_URL_KEY] = request.body.proxy;
         }
 
         if ('cookie' in extraHeaders) {
