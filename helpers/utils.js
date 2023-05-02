@@ -30,32 +30,42 @@ exports.closeContexts = async function closeContexts(browser, contextIds) {
     await Promise.all(closePromises);
 };
 
-async function wait(page, waitFor, options = {}) {
-    // TODO This mimics old page.waitFor behaviour.
-    //  Instead we should update our API to support explicit waiting on selector/xpath/timeout.
+async function wait(page, waitFor) {
+    let { selector, xpath, timeout, options } = waitFor;
 
-    if (!waitFor) {
-        return;
-    }
-    if (waitFor instanceof Object) {
-        const {selectorOrTimeout, options: moreOptions} = waitFor;
-        return wait(page, selectorOrTimeout, {...options, ...moreOptions});
-    }
-    if (!isNaN(waitFor)) {
-        return new Promise(resolve => setTimeout(resolve, waitFor));
-    }
-    if (typeof waitFor === 'string') {
-        if (waitFor.startsWith('//')) {
-            return page.waitForXPath(waitFor, options);
-        } else {
-            return page.waitForSelector(waitFor, options);
+    // for compatibility with old waitFor interface
+    const { selectorOrTimeout } = waitFor;
+    if (selectorOrTimeout) {
+        if (!isNaN(selectorOrTimeout)) {
+            timeout = selectorOrTimeout;
+        } else if (typeof selectorOrTimeout === 'string') {
+            if (selectorOrTimeout.startsWith('//')) {
+                xpath = selectorOrTimeout;
+            } else {
+                selector = selectorOrTimeout;
+            }
         }
     }
-    throw `Can't wait on ${typeof waitFor}`;
+
+    if ([selector, xpath, timeout].filter(Boolean).length > 1) {
+        throw "Wait options must contain either a selector, an xpath or a timeout";
+    }
+
+    if (selector) {
+        return page.waitForSelector(selector, options);
+    }
+    if (xpath) {
+        return page.waitForXPath(xpath, options);
+    }
+    if (timeout) {
+        return new Promise(resolve => setTimeout(resolve, timeout));
+    }
 }
 
 exports.formResponse = async function formResponse(page, closePage, waitFor) {
-    await wait(page, waitFor);
+    if (waitFor) {
+        await wait(page, waitFor);
+    }
 
     const response = {
         contextId: page.browserContext().id,
@@ -121,7 +131,7 @@ exports.performAction = async function performAction(request, action) {
         let extraHeaders = {};
 
         if ('body' in request && 'headers' in request.body) {
-            extraHeaders = {...request.body.headers};
+            extraHeaders = { ...request.body.headers };
         }
 
         if ('body' in request && 'proxy' in request.body) {
@@ -134,7 +144,7 @@ exports.performAction = async function performAction(request, action) {
             const url = request.body.url || page.url()
             const cookies = extraHeaders.cookie.split(';').map(s => {
                 const [name, value] = s.trim().split(/=(.*)/, 2);
-                return {name, value, url};
+                return { name, value, url };
             });
             delete extraHeaders.cookie;
             await page.setCookie(...cookies);

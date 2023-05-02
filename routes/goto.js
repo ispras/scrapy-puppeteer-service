@@ -19,7 +19,13 @@ async function action(page, request) {
 //          networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms.
 //     "referer" <string> Referer header value. If provided it will take preference over the referer header value set by page.setExtraHTTPHeaders().
 // },
-// "waitOptions": {...} same as in click action
+// "waitOptions": {
+//     "timeout": <number> Wait for given timeout in milliseconds
+//     "selector": <string> Wait for element by selector (see https://pptr.dev/api/puppeteer.page.waitforselector)
+//     "xpath": <string> Wait for element by xpath (see https://pptr.dev/api/puppeteer.page.waitforxpath)
+//     "options": <object> Options to wait for elements (see https://pptr.dev/api/puppeteer.waitforselectoroptions)
+// }
+// }
 //
 router.post('/', async function (req, res, next) {
 
