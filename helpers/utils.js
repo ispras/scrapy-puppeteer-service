@@ -1,3 +1,6 @@
+const { proxyRequest } = require('puppeteer-proxy');
+const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
+
 async function findContextInBrowser(browser, contextId) {
 
     for (let context of browser.browserContexts()) {
@@ -30,7 +33,7 @@ exports.closeContexts = async function closeContexts(browser, contextIds) {
 
 async function wait(page, waitFor) {
     if (waitFor instanceof Object) {
-        const {selectorOrTimeout, options} = waitFor;
+        const { selectorOrTimeout, options } = waitFor;
         if (selectorOrTimeout) {
             await page.waitFor(selectorOrTimeout, options);
         }
@@ -59,9 +62,28 @@ exports.formResponse = async function formResponse(page, closePage, waitFor) {
     return response;
 };
 
+async function newPage(context) {
+    const page = await context.newPage();
+
+    await page.setRequestInterception(true);
+
+    // This is request interception in order to make request through proxies
+    page.on('request', async request => {
+        const proxyUrl = page[PROXY_URL_KEY];
+        const contextProxyUrl = page.browserContext()[PROXY_URL_KEY];
+        if (proxyUrl && proxyUrl !== contextProxyUrl) {
+            proxyRequest({ page, proxyUrl, request });
+        } else {
+            request.continue();
+        }
+    });
+
+    return page;
+}
+
 function getProxy(request) {
     if ('body' in request && 'proxy' in request.body) {
-        return new URL(request.body.proxy);
+        return request.body.proxy;
     }
 }
 
@@ -76,17 +98,19 @@ exports.getBrowserPage = async function getBrowserPage(browser, request) {
     const { contextId, pageId } = request.query;
     if (contextId) {
         const context = await findContextInBrowser(browser, contextId);
-        return pageId ? findPageInContext(context, pageId) : context.newPage();
+        return pageId ? findPageInContext(context, pageId) : newPage(context);
     }
     const proxy = getProxy(request);
-    const contextOptions = proxy ? { proxyServer: proxy.origin } : undefined;
-    const context = await browser.createIncognitoBrowserContext(contextOptions);
-    const page = await context.newPage();
-    if (proxy && proxy.username) {
-        await page.authenticate({
-            username: proxy.username,
-            password: proxy.password
-        });
+    if (!proxy) {
+        const context = await browser.createIncognitoBrowserContext();
+        return newPage(context);
+    }
+    const { origin: proxyServer, username, password } = new URL(proxy);
+    const context = await browser.createIncognitoBrowserContext({ proxyServer });
+    context[PROXY_URL_KEY] = proxy;
+    const page = await newPage(context);
+    if (username) {
+        await page.authenticate({ username, password });
     }
     return page;
 };
@@ -99,6 +123,11 @@ exports.performAction = async function performAction(request, action) {
 
         if ('body' in request && 'headers' in request.body) {
             extraHeaders = { ...request.body.headers };
+        }
+
+        const proxy = getProxy(request);
+        if (proxy) {
+            page[PROXY_URL_KEY] = proxy;
         }
 
         if ('cookie' in extraHeaders) {
