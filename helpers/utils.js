@@ -1,5 +1,5 @@
 const { proxyRequest } = require('puppeteer-proxy');
-const PAGE_PROXY_URL_KEY = 'puppeteer-service-proxy-url'
+const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
 async function findContextInBrowser(browser, contextId) {
 
@@ -33,7 +33,7 @@ exports.closeContexts = async function closeContexts(browser, contextIds) {
 
 async function wait(page, waitFor) {
     if (waitFor instanceof Object) {
-        const {selectorOrTimeout, options} = waitFor;
+        const { selectorOrTimeout, options } = waitFor;
         if (selectorOrTimeout) {
             await page.waitFor(selectorOrTimeout, options);
         }
@@ -63,14 +63,15 @@ exports.formResponse = async function formResponse(page, closePage, waitFor) {
 };
 
 async function newPage(context) {
-    let page = await context.newPage();
+    const page = await context.newPage();
 
     await page.setRequestInterception(true);
 
     // This is request interception in order to make request through proxies
     page.on('request', async request => {
-        const { [PAGE_PROXY_URL_KEY]: proxyUrl } = page;
-        if (proxyUrl) {
+        const proxyUrl = page[PROXY_URL_KEY];
+        const contextProxyUrl = page.browserContext()[PROXY_URL_KEY];
+        if (proxyUrl && proxyUrl !== contextProxyUrl) {
             proxyRequest({ page, proxyUrl, request });
         } else {
             request.continue();
@@ -80,32 +81,43 @@ async function newPage(context) {
     return page;
 }
 
+function getProxy(request) {
+    if ('body' in request && 'proxy' in request.body) {
+        return request.body.proxy;
+    }
+}
+
 /***
  * This function returns a page from browser context or create new page or even context if pageId or contextId are
  * none. If no context or now page found throw an error.
  * @param browser
- * @param contextId - identifier of context to find.
- * @param pageId - identifier of page to find.
+ * @param request
  * @returns {Promise<Page>}
  */
-exports.getBrowserPage = async function getBrowserPage(browser, contextId, pageId) {
-
-    if (contextId && pageId) {
-        let context = await findContextInBrowser(browser, contextId);
-        return await findPageInContext(context, pageId);
-    } else if (contextId) {
-        let context = await findContextInBrowser(browser, contextId);
-        return await newPage(context);
-    } else {
-        let context = await browser.createIncognitoBrowserContext();
-        return await newPage(context);
+exports.getBrowserPage = async function getBrowserPage(browser, request) {
+    const { contextId, pageId } = request.query;
+    if (contextId) {
+        const context = await findContextInBrowser(browser, contextId);
+        return pageId ? findPageInContext(context, pageId) : newPage(context);
     }
+    const proxy = getProxy(request);
+    if (!proxy) {
+        const context = await browser.createIncognitoBrowserContext();
+        return newPage(context);
+    }
+    const { origin: proxyServer, username, password } = new URL(proxy);
+    const context = await browser.createIncognitoBrowserContext({ proxyServer });
+    context[PROXY_URL_KEY] = proxy;
+    const page = await newPage(context);
+    if (username) {
+        await page.authenticate({ username, password });
+    }
+    return page;
 };
 
 exports.performAction = async function performAction(request, action) {
-    const { contextId, pageId } = request.query;
     const lock = request.app.get('lock');
-    const page = await exports.getBrowserPage(request.app.get('browser'), contextId, pageId);
+    const page = await exports.getBrowserPage(request.app.get('browser'), request);
     return lock.acquire(await page._target._targetId, async () => {
         let extraHeaders = {};
 
@@ -113,9 +125,9 @@ exports.performAction = async function performAction(request, action) {
             extraHeaders = { ...request.body.headers };
         }
 
-        if ('body' in request && 'proxy' in request.body) {
-            // TODO maybe we should map page ids to proxies instead
-            page[PAGE_PROXY_URL_KEY] = request.body.proxy;
+        const proxy = getProxy(request);
+        if (proxy) {
+            page[PROXY_URL_KEY] = proxy;
         }
 
         if ('cookie' in extraHeaders) {
