@@ -2,9 +2,8 @@ const { proxyRequest } = require('puppeteer-proxy');
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
 async function findContextInBrowser(browser, contextId) {
-
-    for (let context of browser.browserContexts()) {
-        if (contextId === await context._id) {
+    for (const context of browser.browserContexts()) {
+        if (contextId === context.id) {
             return context;
         }
     }
@@ -12,8 +11,8 @@ async function findContextInBrowser(browser, contextId) {
 }
 
 async function findPageInContext(context, pageId) {
-    for (let page of await context.pages()) {
-        if (pageId === await page._target._targetId) {
+    for (const page of await context.pages()) {
+        if (pageId === page.target()._targetId) {
             return page;
         }
     }
@@ -22,31 +21,54 @@ async function findPageInContext(context, pageId) {
 
 exports.closeContexts = async function closeContexts(browser, contextIds) {
     // TODO shared locks on contexts and exclusive on pages?
-    let close_promises = [];
-    for (let context of browser.browserContexts()) {
-        if (contextIds.includes(context._id)) {
-            close_promises.push(context.close());
+    const closePromises = [];
+    for (const context of browser.browserContexts()) {
+        if (contextIds.includes(context.id)) {
+            closePromises.push(context.close());
         }
     }
-    await Promise.all(close_promises);
+    await Promise.all(closePromises);
 };
 
 async function wait(page, waitFor) {
-    if (waitFor instanceof Object) {
-        const { selectorOrTimeout, options } = waitFor;
-        if (selectorOrTimeout) {
-            await page.waitFor(selectorOrTimeout, options);
+    let { selector, xpath, timeout, options } = waitFor;
+
+    // for compatibility with old waitFor interface
+    const { selectorOrTimeout } = waitFor;
+    if (selectorOrTimeout) {
+        if (!isNaN(selectorOrTimeout)) {
+            timeout = selectorOrTimeout;
+        } else if (typeof selectorOrTimeout === 'string') {
+            if (selectorOrTimeout.startsWith('//')) {
+                xpath = selectorOrTimeout;
+            } else {
+                selector = selectorOrTimeout;
+            }
         }
-    } else if (waitFor) {
-        await page.waitFor(waitFor);
+    }
+
+    if ([selector, xpath, timeout].filter(Boolean).length > 1) {
+        throw "Wait options must contain either a selector, an xpath or a timeout";
+    }
+
+    if (selector) {
+        return page.waitForSelector(selector, options);
+    }
+    if (xpath) {
+        return page.waitForXPath(xpath, options);
+    }
+    if (timeout) {
+        return new Promise(resolve => setTimeout(resolve, timeout));
     }
 }
 
 exports.formResponse = async function formResponse(page, closePage, waitFor) {
-    await wait(page, waitFor);
+    if (waitFor) {
+        await wait(page, waitFor);
+    }
 
-    let response = {
-        contextId: page.browserContext()._id,
+    const response = {
+        contextId: page.browserContext().id,
         html: await page.content(),
         cookies: await page.cookies(),
     };
@@ -56,7 +78,7 @@ exports.formResponse = async function formResponse(page, closePage, waitFor) {
     }
 
     if (!page.isClosed()) {
-        response.pageId = await page._target._targetId;
+        response.pageId = page.target()._targetId;
     }
 
     return response;
@@ -118,7 +140,7 @@ exports.getBrowserPage = async function getBrowserPage(browser, request) {
 exports.performAction = async function performAction(request, action) {
     const lock = request.app.get('lock');
     const page = await exports.getBrowserPage(request.app.get('browser'), request);
-    return lock.acquire(await page._target._targetId, async () => {
+    return lock.acquire(page.target()._targetId, async () => {
         let extraHeaders = {};
 
         if ('body' in request && 'headers' in request.body) {

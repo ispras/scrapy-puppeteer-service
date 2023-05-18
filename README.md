@@ -56,8 +56,32 @@ This method allow to goto a page with a specific url in puppeteer.
 Params: 
 
 url - the url which puppeteer should navigate to.      
-navigationOptions - [possible options to use for request.](https://github.com/GoogleChrome/puppeteer/blob/v1.20.0/docs/api.md#pagegotourl-options)      
-waitOptions - [wait for selector or timeout](https://github.com/puppeteer/puppeteer/blob/v1.20.0/docs/api.md#pagewaitforselectororfunctionortimeout-options-args) after navigation completes, same as in click or scroll.
+navigationOptions - [possible options to use for request.](https://pptr.dev/api/puppeteer.page.goto#remarks)      
+waitOptions - [wait for selector](https://pptr.dev/api/puppeteer.page.waitforselector), [xpath](https://pptr.dev/api/puppeteer.page.waitforxpath), or timeout after navigation completes.
+
+Example request body
+```json5
+{
+   "url": "https://example.com", // <string> URL to navigate page to. The url should include scheme, e.g. https://.
+   "navigationOptions": { // Navigation parameters which might have the following properties:
+       "timeout": 30000, // <number> Maximum navigation time in milliseconds, defaults to 30 seconds, pass 0 to disable timeout.
+       // "waitUntil": <string|Array<string>> When to consider navigation succeeded, defaults to load. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
+         // load - consider navigation to be finished when the load event is fired.
+         // domcontentloaded - consider navigation to be finished when the DOMContentLoaded event is fired.
+         // networkidle0 - consider navigation to be finished when there are no more than 0 network connections for at least 500 ms.
+         // networkidle2 - consider navigation to be finished when there are no more than 2 network connections for at least 500 ms.
+       // "referer": <string> Referer header value. If provided it will take preference over the referer header value set by page.setExtraHTTPHeaders().
+   },
+   "waitOptions": { // Wait for element or timeout after navigation completes
+       // "timeout": <number> Wait for given timeout in milliseconds
+       "selector": "span.target", // <string> Wait for element by selector (see https://pptr.dev/api/puppeteer.page.waitforselector)
+       // "xpath": <string> Wait for element by xpath (see https://pptr.dev/api/puppeteer.page.waitforxpath)
+       "options": { // <object> Options to wait for elements (see https://pptr.dev/api/puppeteer.waitforselectoroptions)
+           "timeout": 10000
+       } 
+   }
+}
+```
 
 ### **/back** and **/forward**
 This methods helps to navigate back and forward to see previously seen pages.
@@ -77,9 +101,8 @@ Example request body:
         "delay": 0 //<number> Time to wait between mousedown and mouseup in milliseconds. Defaults to 0.
     },
     "waitOptions": {
-        // if selectorOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
-        // if selectorOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
-        "selectorOrTimeout": 5, //default timeout is 1000ms
+        // selector, xpath or timeout, same as in the goto method
+        "timeout": 5000, //default timeout is 1000ms
     },
     "navigationOptions": { // use if click triggers navigation to other page; same as in goXXX methods
         "waitUntil": "domcontentloaded",    
@@ -96,9 +119,8 @@ Example request body:
 {
     "selector": "", //<string> A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
     "waitOptions": {
-        // if selectorOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
-        // if selectorOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
-        "selectorOrTimeout": 5, //default timeout is 1000ms
+      // selector, xpath or timeout, same as in the goto method
+      "timeout": 5000, //default timeout is 1000ms
     }
  }
 ```
@@ -116,8 +138,8 @@ Simple example request body of goto:
 async function action(page, request) {
     await page.goto(request.query.uri);
     let response = { //return response that you want to see as result
-        context_id: page.browserContext()._id,
-        page_id: await page._target._targetId,
+        context_id: page.browserContext().id,
+        page_id: page.target()._targetId,
         html: await page.content(),
         cookies: await page.cookies()
     };

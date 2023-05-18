@@ -13,18 +13,15 @@ async function action(page, request) {
             window.scrollBy(0, document.body.scrollHeight)
         });
     }
-    return utils.formResponse(page, request.query.closePage, request.body.waitOptions || DEFAULT_TIMEOUT);
+    const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT};
+    return utils.formResponse(page, request.query.closePage, waitOptions);
 }
 
 // Method that scrolls page to a certain selector.
 // Example body:
 //  body = {
 //     "selector": "", //<string> A selector to search for element to scroll
-//     "waitOptions": {
-//         // if selectorOrFunctionOrTimeout is a string, then the first argument is treated as a selector or xpath, depending on whether or not it starts with '//', and the method is a shortcut for page.waitForSelector or page.waitForXPath
-//         // if selectorOrFunctionOrTimeout is a number, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
-//         "selectorOrTimeout":...,
-//     }
+//     "waitOptions": {...} // same as in goto action, defaults to 1s timeout
 //  }
 router.post('/', async function (req, res, next) {
     
