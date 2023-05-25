@@ -16,14 +16,15 @@ RUN mkdir -p /app
 COPY . /app/
 WORKDIR /app
 ENV NODE_PATH=/app/node_modules
-RUN npm install
 
-# Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
     && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app/node_modules
+    && chown -R pptruser:pptruser /app
 
 USER pptruser
+
+RUN yarn install
+
 EXPOSE 3000
 CMD npm start
