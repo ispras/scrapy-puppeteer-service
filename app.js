@@ -2,6 +2,7 @@ const express = require('express');
 const puppeteer = require('puppeteer-extra')
 
 const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
+const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -26,7 +27,8 @@ const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
-const TWO_CAPTCHA_TOKEN = process.env.TWO_CAPTCHA_TOKEN || "93b76ee725f22aba2b6c03fda120b611"
+const TWO_CAPTCHA_TOKEN = process.env.TWO_CAPTCHA_TOKEN || "0";
+const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
 
 async function setupBrowser() {
     try {
@@ -37,7 +39,7 @@ async function setupBrowser() {
                         id: '2captcha',
                         token: TWO_CAPTCHA_TOKEN
                     },
-                    visualFeedback: true // colorize reCAPTCHAs (violet = detected, green = solved) | Potentially to be deleted
+                    visualFeedback: true
                 })
             )
         }
@@ -45,6 +47,16 @@ async function setupBrowser() {
         console.error('Failed to proceed 2captcha token:', error);
         process.exit(1);
     }
+
+    try {
+        if (STEALTH_BROWSING) {  // Activate or not StealthPlugin
+            puppeteer.use(StealthPlugin());
+        }
+    } catch (error) {
+        console.error('Failed to enable StealthPlugin:', error);
+        process.exit(1);
+    }
+
     try {
         //TODO add more params for puppeteer launch
         const browser = await puppeteer.launch(
@@ -79,7 +91,7 @@ app.use('/click', clickRouter);
 app.use('/action', actionRouter);
 app.use('/scroll', scrollRouter);
 app.use('/screenshot', screenshotRouter);
-app.use('/recaptcha_solver', recaptchaSolverRouter)  // Router for recaptchaSolver
+app.use('/recaptcha_solver', recaptchaSolverRouter)
 app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
 app.use('/close_context', closeContextRouter);
