@@ -1,5 +1,7 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra')
+
+const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -13,6 +15,7 @@ const clickRouter = require('./routes/click');
 const actionRouter = require('./routes/action');
 const scrollRouter = require('./routes/scroll');
 const screenshotRouter = require('./routes/screenshot');
+const recaptchaSolverRouter = require('./routes/recaptcha_solver')
 const mhtmlRouter = require('./routes/mhtml');
 const harRouter = require('./routes/har');
 const closeContextRouter = require('./routes/close_context');
@@ -23,8 +26,25 @@ const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
+const TWO_CAPTCHA_TOKEN = process.env.TWO_CAPTCHA_TOKEN || "93b76ee725f22aba2b6c03fda120b611"
 
 async function setupBrowser() {
+    try {
+        if (TWO_CAPTCHA_TOKEN !== "0") {  // If token is given then RecapcthaPlugin is activated
+            puppeteer.use(
+                RecaptchaPlugin({
+                    provider: {
+                        id: '2captcha',
+                        token: TWO_CAPTCHA_TOKEN
+                    },
+                    visualFeedback: true // colorize reCAPTCHAs (violet = detected, green = solved) | Potentially to be deleted
+                })
+            )
+        }
+    } catch (error) {
+        console.error('Failed to proceed 2captcha token:', error);
+        process.exit(1);
+    }
     try {
         //TODO add more params for puppeteer launch
         const browser = await puppeteer.launch(
@@ -36,7 +56,6 @@ async function setupBrowser() {
         browser.on('disconnected', setupBrowser);
         app.set('browser', browser);
     } catch (error) {
-        console.error('Failed to start browser:', error);
         process.exit(1);
     }
 }
@@ -60,6 +79,7 @@ app.use('/click', clickRouter);
 app.use('/action', actionRouter);
 app.use('/scroll', scrollRouter);
 app.use('/screenshot', screenshotRouter);
+app.use('/recaptcha_solver', recaptchaSolverRouter)  // Router for recaptchaSolver
 app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
 app.use('/close_context', closeContextRouter);
