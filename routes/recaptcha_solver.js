@@ -10,6 +10,10 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  * If there is no recaptcha on the page nothing bad will happen.
  * If there is recaptcha it solves it and then inserts the special code
  * into the page automatically.
+ *
+ * Returns useful information about recaptcha_solving.
+ * For more information about return value visit
+ * https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-recaptcha#result-object
  */
 
 /**
@@ -19,22 +23,29 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  */
 
 async function action(page, request) {
-    const {
-        captchas,
-        filtered,
-        solutions,
-        solved,
-        error
-    } = await page.solveRecaptchas();
+    let recaptcha_data = await page.findRecaptchas();
 
+    if (request.body.solve_recaptcha) {
+        recaptcha_data = await page.solveRecaptchas();
+    }
     const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT };
-    return utils.formResponse(page, request.query.closePage, waitOptions);
+    return {
+        ...await utils.formResponse(page, request.query.closePage, waitOptions),
+        recaptcha_data: recaptcha_data,
+    }
 }
 
 router.post('/', async function (req, res, next) {
     if (!req.query.contextId || !req.query.pageId) {
         res.status(400);
         res.send("No page in request");
+        next();
+        return;
+    }
+
+    if (!("solve_recaptcha" in req.body)) {
+        res.status("400");
+        res.send("No solve_recaptcha parameter in request");
         next();
         return;
     }

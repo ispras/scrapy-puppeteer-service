@@ -128,6 +128,13 @@ exports.getBrowserPage = async function getBrowserPage(browser, request) {
         return newPage(context);
     }
     const { origin: proxyServer, username, password } = new URL(proxy);
+
+    // TODO: (list) (for FingerPrints)
+    /*
+     * 1.) Create new context using newInjectedContext from fingerprint-injector
+     * 2.) It seems that it is not necessary to change "newPage" function
+     * 3.) Check functionality!
+     */
     const context = await browser.createIncognitoBrowserContext({ proxyServer });
     context[PROXY_URL_KEY] = proxy;
     const page = await newPage(context);

@@ -27,17 +27,17 @@ const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
-const TWO_CAPTCHA_TOKEN = process.env.TWO_CAPTCHA_TOKEN || "0";
+const TOKEN_2CAPTCHA = process.env.TWO_CAPTCHA_TOKEN || "0";
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
 
 async function setupBrowser() {
     try {
-        if (TWO_CAPTCHA_TOKEN !== "0") {  // If token is given then RecapcthaPlugin is activated
+        if (TOKEN_2CAPTCHA !== "0") {  // If token is given then RecapcthaPlugin is activated
             puppeteer.use(
                 RecaptchaPlugin({
                     provider: {
                         id: '2captcha',
-                        token: TWO_CAPTCHA_TOKEN
+                        token: TOKEN_2CAPTCHA
                     },
                     visualFeedback: true
                 })
