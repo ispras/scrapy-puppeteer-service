@@ -23,11 +23,16 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  */
 
 async function action(page, request) {
-    let recaptcha_data = await page.findRecaptchas();
+
+    let recaptcha_data;
 
     if (request.body.solve_recaptcha) {
         recaptcha_data = await page.solveRecaptchas();
     }
+    else {
+        recaptcha_data = await page.findRecaptchas();
+    }
+
     const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT };
     return {
         ...await utils.formResponse(page, request.query.closePage, waitOptions),
@@ -39,6 +44,13 @@ router.post('/', async function (req, res, next) {
     if (!req.query.contextId || !req.query.pageId) {
         res.status(400);
         res.send("No page in request");
+        next();
+        return;
+    }
+
+    if (!process.env.TOKEN_2CAPTCHA) {
+        res.status("501");
+        res.send("TOKEN_2CAPTCHA is not provided!");
         next();
         return;
     }

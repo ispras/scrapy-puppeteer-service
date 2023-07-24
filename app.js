@@ -27,19 +27,18 @@ const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
-const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA || "0";
+const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA;
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
 
 async function setupBrowser() {
     try {
-        if (TOKEN_2CAPTCHA !== "0") {  // If token is given then RecapcthaPlugin is activated
+        if (TOKEN_2CAPTCHA) {  // If token is given then RecapcthaPlugin is activated
             puppeteer.use(
                 RecaptchaPlugin({
                     provider: {
                         id: '2captcha',
                         token: TOKEN_2CAPTCHA
-                    },
-                    visualFeedback: true
+                    }
                 })
             )
         }
@@ -91,7 +90,7 @@ app.use('/click', clickRouter);
 app.use('/action', actionRouter);
 app.use('/scroll', scrollRouter);
 app.use('/screenshot', screenshotRouter);
-app.use('/recaptcha_solver', recaptchaSolverRouter)
+app.use('/recaptcha_solver', recaptchaSolverRouter);
 app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
 app.use('/close_context', closeContextRouter);
