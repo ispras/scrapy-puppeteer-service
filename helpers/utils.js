@@ -128,6 +128,7 @@ exports.getBrowserPage = async function getBrowserPage(browser, request) {
         return newPage(context);
     }
     const { origin: proxyServer, username, password } = new URL(proxy);
+
     const context = await browser.createIncognitoBrowserContext({ proxyServer });
     context[PROXY_URL_KEY] = proxy;
     const page = await newPage(context);
