@@ -62,7 +62,14 @@ async function wait(page, waitFor) {
     }
 }
 
-exports.formResponse = async function formResponse(page, closePage, waitFor) {
+exports.formResponse = async function formResponse(page, closePage, waitFor, solveRecaptcha = true) {
+    if (solveRecaptcha && process.env.TOKEN_2CAPTCHA) {
+        const recaptcha_data = await page.solveRecaptchas();
+        if (recaptcha_data.captchas.length) {
+            console.log('Solved captcha', page.url(), recaptcha_data);
+        }
+    }
+
     if (waitFor) {
         await wait(page, waitFor);
     }

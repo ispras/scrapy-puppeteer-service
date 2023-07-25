@@ -28,14 +28,13 @@ async function action(page, request) {
 
     if (request.body.solve_recaptcha) {
         recaptcha_data = await page.solveRecaptchas();
-    }
-    else {
+    } else {
         recaptcha_data = await page.findRecaptchas();
     }
 
     const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT };
     return {
-        ...await utils.formResponse(page, request.query.closePage, waitOptions),
+        ...await utils.formResponse(page, request.query.closePage, waitOptions, false),
         recaptcha_data: recaptcha_data,
     }
 }

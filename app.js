@@ -38,7 +38,8 @@ async function setupBrowser() {
                     provider: {
                         id: '2captcha',
                         token: TOKEN_2CAPTCHA
-                    }
+                    },
+                    visualFeedback: !HEADLESS
                 })
             )
         }
