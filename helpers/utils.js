@@ -140,7 +140,10 @@ exports.getBrowserPage = async function getBrowserPage(browser, request) {
     context[PROXY_URL_KEY] = proxy;
     const page = await newPage(context);
     if (username) {
-        await page.authenticate({ username, password });
+        await page.authenticate({
+            username: decodeURIComponent(username),
+            password: decodeURIComponent(password)
+        });
     }
     return page;
 };
