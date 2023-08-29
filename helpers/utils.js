@@ -175,11 +175,9 @@ exports.performAction = async function performAction(request, action) {
             return await action(page, request);
         }
         catch (err) {
-            throw {
-                contextId: page.browserContext().id,
-                pageId: page.target()._targetId,
-                error: err,
-            }
+            err.contextId = page.browserContext().id;
+            err.pageId = page.target()._targetId;
+            throw err;
         }
     });
 };
