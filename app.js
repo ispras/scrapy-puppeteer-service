@@ -97,7 +97,6 @@ app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
 app.use('/close_context', closeContextRouter);
 
-app.use(middlewares.processingMiddleware);
 app.use(middlewares.exceptionMiddleware);
 
 module.exports = app;
