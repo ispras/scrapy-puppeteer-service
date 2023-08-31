@@ -171,6 +171,13 @@ exports.performAction = async function performAction(request, action) {
             await page.setExtraHTTPHeaders(extraHeaders);
         }
 
-        return await action(page, request);
+        try {
+            return await action(page, request);
+        }
+        catch (err) {
+            err.contextId = page.browserContext().id;
+            err.pageId = page.target()._targetId;
+            throw err;
+        }
     });
 };
