@@ -21,6 +21,8 @@ const mhtmlRouter = require('./routes/mhtml');
 const harRouter = require('./routes/har');
 const closeContextRouter = require('./routes/close_context');
 
+const middlewares = require('./helpers/middlewares')
+
 const app = express();
 
 const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
@@ -96,5 +98,6 @@ app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
 app.use('/close_context', closeContextRouter);
 
+app.use(middlewares.exceptionMiddleware);
 
 module.exports = app;
