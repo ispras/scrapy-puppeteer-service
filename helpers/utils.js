@@ -7,7 +7,7 @@ async function findContextInBrowser(browser, contextId) {
             return context;
         }
     }
-    throw "Context not found";
+    throw new Error("Context not found");
 }
 
 async function findPageInContext(context, pageId) {
@@ -16,7 +16,7 @@ async function findPageInContext(context, pageId) {
             return page;
         }
     }
-    throw "Page not found";
+    throw new Error("Page not found");
 }
 
 exports.closeContexts = async function closeContexts(browser, contextIds) {
@@ -48,7 +48,7 @@ async function wait(page, waitFor) {
     }
 
     if ([selector, xpath, timeout].filter(Boolean).length > 1) {
-        throw "Wait options must contain either a selector, an xpath or a timeout";
+        throw new Error("Wait options must contain either a selector, an xpath or a timeout");
     }
 
     if (selector) {
@@ -173,8 +173,7 @@ exports.performAction = async function performAction(request, action) {
 
         try {
             return await action(page, request);
-        }
-        catch (err) {
+        } catch (err) {
             err.contextId = page.browserContext().id;
             err.pageId = page.target()._targetId;
             throw err;
