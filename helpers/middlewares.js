@@ -30,12 +30,3 @@ exports.exceptionMiddleware = async function exceptionMiddleware(err, req, res, 
 
     next(err);
 }
-
-exports.noContextMiddleware = async function noContextMiddleware(err, req, res, next) {
-    res.status(422);
-
-    res.send({
-        error: "no context"
-    });
-    next(err);
-}
