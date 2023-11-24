@@ -4,7 +4,6 @@ const puppeteer = require('puppeteer-extra')
 const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
 const bodyParser = require('body-parser');
 const AsyncLock = require('async-lock');
 
@@ -80,7 +79,7 @@ async function setupBrowser() {
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(logger('dev'));
+app.use(middlewares.logMiddleware);
 app.use(bodyParser.raw({inflate: true, limit: '200kb', type: 'application/javascript'}));
 app.use(cookieParser());
 
@@ -97,6 +96,7 @@ app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
 app.use('/close_context', closeContextRouter);
 
-app.use(middlewares.exceptionMiddleware);
+app.use(middlewares.processExceptionMiddleware);
+app.use(middlewares.logExceptionMiddleware);
 
 module.exports = app;

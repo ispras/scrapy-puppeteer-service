@@ -1,4 +1,16 @@
-exports.exceptionMiddleware = async function exceptionMiddleware(err, req, res, next) {
+const morgan= require('morgan');
+const logger = require('./loggers');
+const e = require("express");
+
+const stream = {
+    write: (message) => logger.logger.http(message),
+};
+
+const logMiddleware = morgan("short", {stream});
+exports.logMiddleware = logMiddleware;
+
+
+exports.processExceptionMiddleware = async function processExceptionMiddleware(err, req, res, next) {
     if (res.headersSent) {
         return next(err);
     }
@@ -17,4 +29,9 @@ exports.exceptionMiddleware = async function exceptionMiddleware(err, req, res, 
         error: errorMessage
     });
     next(err);
+}
+
+exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next){
+    logger.logger.error(err);
+    next();
 }
