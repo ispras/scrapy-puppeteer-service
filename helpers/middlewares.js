@@ -2,12 +2,17 @@ const morgan= require('morgan');
 const logger = require('./loggers');
 const e = require("express");
 const utils = require('./utils');
+const url = require("url");
 
 function format(tokens, req, res) {
     const contextId = req.query["contextId"] || "no context";
     const pageId = req.query["pageId"] || "no page";
 
-    let message = `${req.baseUrl.replace('/', '')} (${tokens.status(req, res)})\n`
+    const url = req.baseUrl || req.originalUrl || req.url;
+    const query_index = url.indexOf('?');
+    const pathname = query_index !== -1 ? url.slice(1, query_index) : url.slice(1);
+
+    let message = `${pathname} (${tokens.status(req, res)})\n`
         + "Request parameters:\n"
         + `    contextId: ${contextId}\n`
         + `    pageId: ${pageId}\n`
