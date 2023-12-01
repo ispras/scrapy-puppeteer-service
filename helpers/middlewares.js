@@ -1,8 +1,5 @@
 const morgan= require('morgan');
-const logger = require('./loggers');
-const e = require("express");
-const utils = require('./utils');
-const url = require("url");
+const loggers = require('./loggers');
 
 function format(tokens, req, res) {
     const contextId = req.query["contextId"] || "no context";
@@ -12,17 +9,16 @@ function format(tokens, req, res) {
     const query_index = url.indexOf('?');
     const pathname = query_index !== -1 ? url.slice(1, query_index) : url.slice(1);
 
-    let message = `${pathname} (${tokens.status(req, res)})\n`
+    return `${pathname} (${tokens.status(req, res)})\n`
         + "Request parameters:\n"
         + `    contextId: ${contextId}\n`
         + `    pageId: ${pageId}\n`
         + `    body: ${JSON.stringify(req.body, null, 8)}`;
-    return message;
 }
 
 const options = {
     stream: {
-        write: (message) => logger.logger.http(message)
+        write: (message) => loggers.logger.http(message)
     },
 }
 
@@ -50,6 +46,6 @@ exports.processExceptionMiddleware = async function processExceptionMiddleware(e
 }
 
 exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next){
-    logger.logger.error({message: err, req, res});
+    loggers.logger.error({message: err, req, res});
     next();
 }

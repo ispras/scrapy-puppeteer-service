@@ -20,18 +20,13 @@ const console_format = winston.format.combine(
 );
 
 const transports = [
-    new winston.transports.File({
-        level: 'error',
-        filename: 'errors.log',
-        format: file_format,
-    }),
     new winston.transports.Console({
         level: 'http',
         format: console_format,
     }),
     new winston.transports.File({
         level: 'http',
-        filename: 'combined.log',
+        filename: 'logs.log',
         format: file_format,
     }),
 ]
