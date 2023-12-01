@@ -1,38 +1,23 @@
 const winston = require('winston');
 
 const log_printer = winston.format.printf((info) => {
-    const log = `[${info.timestamp}] ${info.level}: ${info.message}`;
-
-    return info.stack ? `${log}\n${info.stack}` : log;
+    let log = `[${info.timestamp}] ${info.level}: ${info.message}`;
+    log = info.stack ? `${log}\n${info.stack}\n` : log;
+    return log;
 });
 
 const file_format = winston.format.combine(
-    winston.format.errors({stack: true}),
     winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss:ms'}),
+    winston.format.errors({stack: true}),
     log_printer,
 );
 
 const console_format = winston.format.combine(
     winston.format.errors({stack: true}),
     winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss:ms'}),
-    winston.format.colorize({message: true}),
+    winston.format.colorize({level: true}),
     log_printer,
 );
-
-// const common_format = winston.format.combine(
-//     winston.format.errors({stack: true}),
-//     winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss:ms'}),
-//     log_printer,
-// );
-
-// const file_format = winston.format.combine(
-//     common_format,
-// )
-
-// const console_format = winston.format.combine(
-//     winston.format.colorize({all: true}),
-//     common_format,
-// )
 
 const transports = [
     new winston.transports.File({
@@ -51,9 +36,7 @@ const transports = [
     }),
 ]
 
-const logger = winston.createLogger({
+exports.logger = winston.createLogger({
     level: 'verbose',
-    // format: console_format,
     transports: transports,
 });
-exports.logger = logger;

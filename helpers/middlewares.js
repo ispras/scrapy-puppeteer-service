@@ -1,14 +1,27 @@
 const morgan= require('morgan');
 const logger = require('./loggers');
 const e = require("express");
+const utils = require('./utils');
 
-const stream = {
-    write: (message) => logger.logger.http(message),
-};
+function format(tokens, req, res) {
+    const contextId = req.query["contextId"] || "no context";
+    const pageId = req.query["pageId"] || "no page";
 
-const logMiddleware = morgan("short", {stream});
-exports.logMiddleware = logMiddleware;
+    let message = `${req.baseUrl.replace('/', '')} (${tokens.status(req, res)})\n`
+        + "Request parameters:\n"
+        + `    contextId: ${contextId}\n`
+        + `    pageId: ${pageId}\n`
+        + `    body: ${JSON.stringify(req.body, null, 8)}`;
+    return message;
+}
 
+const options = {
+    stream: {
+        write: (message) => logger.logger.http(message)
+    },
+}
+
+exports.logMiddleware = morgan(format, options);
 
 exports.processExceptionMiddleware = async function processExceptionMiddleware(err, req, res, next) {
     if (res.headersSent) {
@@ -32,6 +45,6 @@ exports.processExceptionMiddleware = async function processExceptionMiddleware(e
 }
 
 exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next){
-    logger.logger.error(err);
+    logger.logger.error({message: err, req, res});
     next();
 }
