@@ -19,19 +19,54 @@ const consoleFormat = winston.format.combine(
     logPrinter,
 );
 
-const transports = [
-    new winston.transports.Console({
-        level: 'http',
-        format: consoleFormat,
-    }),
-    new winston.transports.File({
-        level: 'http',
-        filename: 'logs.log',
-        format: fileFormat,
-    }),
-]
+let logger;
 
-exports.logger = winston.createLogger({
-    level: 'verbose',
-    transports: transports,
-});
+function createTransports(logLevel, logFilePath) {
+    let transports = [];
+
+    transports.push(new winston.transports.Console({
+        level: logLevel,
+        format: consoleFormat,
+    }));
+    if (logFilePath !== undefined) {
+        transports.push(new winston.transports.File({
+            level: logLevel,
+            filename: logFilePath,
+            format: fileFormat,
+        }));
+    }
+
+    return transports;
+}
+
+exports.initLogger = function initLogger(logLevel, logFilePath) {
+    const transports = createTransports(logLevel, logFilePath);
+
+    logger = winston.createLogger({
+        level: logLevel,
+        transports: transports,
+    });
+}
+
+exports.format = function format(tokens, req, res) {
+    const contextId = req.query["contextId"] || "no context";
+    const pageId = req.query["pageId"] || "no page";
+
+    const url = req.baseUrl || req.originalUrl || req.url;
+    const query_index = url.indexOf('?');
+    const pathname = query_index !== -1 ? url.slice(1, query_index) : url.slice(1);
+
+    return `${pathname} (${tokens.status(req, res)})\n`
+        + "Request parameters:\n"
+        + `    contextId: ${contextId}\n`
+        + `    pageId: ${pageId}\n`
+        + `    body: ${JSON.stringify(req.body, null, 8)}`;
+}
+
+exports.getMorganOptions = function getMorganOptions() {
+    return {
+        stream: {
+            write: (message) => logger.http(message),
+        },
+    };
+}

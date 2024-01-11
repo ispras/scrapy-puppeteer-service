@@ -1,28 +1,10 @@
 const morgan= require('morgan');
 const loggers = require('./loggers');
 
-function format(tokens, req, res) {
-    const contextId = req.query["contextId"] || "no context";
-    const pageId = req.query["pageId"] || "no page";
-
-    const url = req.baseUrl || req.originalUrl || req.url;
-    const query_index = url.indexOf('?');
-    const pathname = query_index !== -1 ? url.slice(1, query_index) : url.slice(1);
-
-    return `${pathname} (${tokens.status(req, res)})\n`
-        + "Request parameters:\n"
-        + `    contextId: ${contextId}\n`
-        + `    pageId: ${pageId}\n`
-        + `    body: ${JSON.stringify(req.body, null, 8)}`;
+exports.createLogMiddleware = function createLogMiddleware(logLevel, logFilePath) {
+    loggers.initLogger(logLevel, logFilePath);
+    return morgan(loggers.format, loggers.getMorganOptions());
 }
-
-const options = {
-    stream: {
-        write: (message) => loggers.logger.http(message)
-    },
-}
-
-exports.logMiddleware = morgan(format, options);
 
 exports.processExceptionMiddleware = async function processExceptionMiddleware(err, req, res, next) {
     if (res.headersSent) {

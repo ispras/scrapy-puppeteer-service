@@ -24,6 +24,8 @@ const middlewares = require('./helpers/middlewares')
 
 const app = express();
 
+const LOG_LEVEL = process.env.LOG_LEVEL || "http";
+const LOG_FILE = process.env.LOG_FILE;
 const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
@@ -79,7 +81,7 @@ async function setupBrowser() {
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(middlewares.logMiddleware);
+app.use(middlewares.createLogMiddleware(LOG_LEVEL, LOG_FILE));
 app.use(bodyParser.raw({inflate: true, limit: '200kb', type: 'application/javascript'}));
 app.use(cookieParser());
 
