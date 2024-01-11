@@ -2,7 +2,15 @@ const winston = require('winston');
 
 const logPrinter = winston.format.printf((info) => {
     let log = `[${info.timestamp}] ${info.level}: ${info.message}`;
-    log = info.stack ? `${log}\n${info.stack}\n` : log;
+
+    if (info.stack) {
+        log = `${log}`
+            + "\nRequest parameters:"
+            + `\n    contextId: ${info.contextId}`
+            + `\n    pageId: ${info.pageId}`
+            + `\n${info.stack}\n`
+    }
+
     return log;
 });
 
@@ -70,13 +78,8 @@ exports.format = function format(tokens, req, res) {
     const query_index = url.indexOf('?');
     const pathname = query_index !== -1 ? url.slice(1, query_index) : url.slice(1);
 
-    // console.log("Printing response:");
-    // console.log(res.getHeaders());
-    // console.log(typeof resContextId);
-    // console.log(resContextId);
-
-    return `${pathname} (${tokens.status(req, res)})\n`
-        + "Request parameters:"
+    return `${pathname} (${tokens.status(req, res)})`
+        + "\nRequest parameters:"
         + `${reqContextId ? `\n    contextId: ${reqContextId}` : ""}`
         + `${reqPageId ? `\n    pageId: ${reqPageId}` : ""}`
         + `\n    closePage: ${closePage}`
