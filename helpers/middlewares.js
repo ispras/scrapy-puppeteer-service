@@ -1,9 +1,21 @@
 const morgan= require('morgan');
 const loggers = require('./loggers');
 
+let logger;
+
 exports.createLogMiddleware = function createLogMiddleware(logLevel, logFilePath) {
     loggers.initLogger(logLevel, logFilePath);
-    return morgan(loggers.format, loggers.getMorganOptions());
+
+    logger = loggers.getLogger();
+
+    return morgan(
+        loggers.format,
+        {
+            stream: {
+                write: (message) => logger.http(message),
+            },
+        }
+    );
 }
 
 exports.processExceptionMiddleware = async function processExceptionMiddleware(err, req, res, next) {
@@ -28,6 +40,6 @@ exports.processExceptionMiddleware = async function processExceptionMiddleware(e
 }
 
 exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next){
-    loggers.logger.error({message: err, req, res});
+    logger.error({message: err, req, res});
     next();
 }
