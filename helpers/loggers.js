@@ -70,18 +70,18 @@ exports.format = function format(tokens, req, res) {
     const query_index = url.indexOf('?');
     const pathname = query_index !== -1 ? url.slice(1, query_index) : url.slice(1);
 
-    console.log("Printing response:");
-    console.log(res.getHeaders());
-    console.log(typeof resContextId);
-    console.log(resContextId);
+    // console.log("Printing response:");
+    // console.log(res.getHeaders());
+    // console.log(typeof resContextId);
+    // console.log(resContextId);
 
     return `${pathname} (${tokens.status(req, res)})\n`
-        + "Request parameters:\n"
-        + `${reqContextId ? `    contextId: ${reqContextId}\n` : ""}`
-        + `${reqPageId ? `    pageId: ${reqPageId}\n` : ""}`
-        + `    closePage: ${closePage}\n`
-        + `    body: ${getBody(req.body)}`
-        + `${resContextId ? `Created page with ${resContextId} contextId` : ""}`;
+        + "Request parameters:"
+        + `${reqContextId ? `\n    contextId: ${reqContextId}` : ""}`
+        + `${reqPageId ? `\n    pageId: ${reqPageId}` : ""}`
+        + `\n    closePage: ${closePage}`
+        + `\n    body: ${getBody(req.body)}`
+        + `${!reqContextId && resContextId ? `\nCreated page with ${resContextId} contextId` : ""}`;
 }
 
 exports.getLogger = function getLogger() {
