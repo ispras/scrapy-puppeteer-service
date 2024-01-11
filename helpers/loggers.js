@@ -52,7 +52,7 @@ function getBody(body) {
     if (body instanceof Buffer) {  // Action request
         body = body.toString();
         body = JSON.stringify(body, null, 8);
-        body = body.replace(/\\n/g, "\n");
+        body = body.replace(/\\n/g, "\n");  // To log new lines and not `\n`
     } else {  // Other requests
         body = JSON.stringify(body, null, 8);
     }
@@ -61,23 +61,27 @@ function getBody(body) {
 }
 
 exports.format = function format(tokens, req, res) {
-    const contextId = req.query["contextId"] || "no context";
-    const pageId = req.query["pageId"] || "no page";
+    const reqContextId = req.query["contextId"];
+    const reqPageId = req.query["pageId"];
+    const resContextId = res.getHeaders()['scrapy-puppeteer-service-context-id'];
     const closePage = req.query["closePage"] === "1";
 
     const url = req.baseUrl || req.originalUrl || req.url;
     const query_index = url.indexOf('?');
     const pathname = query_index !== -1 ? url.slice(1, query_index) : url.slice(1);
 
-    // console.log("Printing request:");
-    // console.log(req);
+    console.log("Printing response:");
+    console.log(res.getHeaders());
+    console.log(typeof resContextId);
+    console.log(resContextId);
 
     return `${pathname} (${tokens.status(req, res)})\n`
         + "Request parameters:\n"
-        + `    contextId: ${contextId}\n`
-        + `    pageId: ${pageId}\n`
+        + `${reqContextId ? `    contextId: ${reqContextId}\n` : ""}`
+        + `${reqPageId ? `    pageId: ${reqPageId}\n` : ""}`
         + `    closePage: ${closePage}\n`
-        + `    body: ${getBody(req.body)}`;
+        + `    body: ${getBody(req.body)}`
+        + `${resContextId ? `Created page with ${resContextId} contextId` : ""}`;
 }
 
 exports.getLogger = function getLogger() {
