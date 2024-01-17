@@ -3,7 +3,7 @@ const loggers = require('./loggers');
 
 let logger;
 
-exports.createLogMiddleware = function createLogMiddleware(logLevel, logFilePath) {
+exports.logHTTPMiddleware = function logHTTPMiddleware(logLevel, logFilePath) {
     loggers.initLogger(logLevel, logFilePath);
 
     logger = loggers.getLogger();

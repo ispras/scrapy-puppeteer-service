@@ -81,7 +81,7 @@ async function setupBrowser() {
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(middlewares.createLogMiddleware(LOG_LEVEL, LOG_FILE));
+app.use(middlewares.logHTTPMiddleware(LOG_LEVEL, LOG_FILE));
 app.use(bodyParser.raw({inflate: true, limit: '200kb', type: 'application/javascript'}));
 app.use(cookieParser());
 
