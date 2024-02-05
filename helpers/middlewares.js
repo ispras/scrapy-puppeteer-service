@@ -50,6 +50,10 @@ exports.processExceptionMiddleware = async function processExceptionMiddleware(e
 }
 
 exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next){
-    logger.error({message: err, req, res});
+    logger.error({
+        message: err,
+        contextId: req.query["contextId"],
+        pageId: req.query["pageId"],
+    });
     next();
 }

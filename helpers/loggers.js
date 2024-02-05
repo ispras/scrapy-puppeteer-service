@@ -58,8 +58,7 @@ exports.initLogger = function initLogger(logLevel, logFilePath) {
 
 function getBody(body) {
     if (body instanceof Buffer) {  // Action request
-        body = JSON.stringify(body, null, 8);
-        body = body.replace(/\\n/g, "\n");  // To log new lines and not `\n`
+        body = body.toString()
     } else {  // Other requests
         body = JSON.stringify(body, null, 8);
     }
