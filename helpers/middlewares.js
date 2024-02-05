@@ -4,9 +4,7 @@ const exceptions = require("./exceptions");
 
 let logger;
 
-exports.logHTTPMiddleware = function logHTTPMiddleware(logLevel, logFilePath) {
-    loggers.initLogger(logLevel, logFilePath);
-
+exports.logHTTPMiddleware = function logHTTPMiddleware() {
     logger = loggers.getLogger();
 
     return morgan(

@@ -21,6 +21,7 @@ const harRouter = require('./routes/har');
 const closeContextRouter = require('./routes/close_context');
 
 const middlewares = require('./helpers/middlewares')
+const loggers = require("./helpers/loggers");
 
 const app = express();
 
@@ -32,6 +33,8 @@ const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
 const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA;
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
+
+loggers.initLogger(LOG_LEVEL, LOG_FILE);
 
 async function setupBrowser() {
     try {

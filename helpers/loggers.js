@@ -58,7 +58,6 @@ exports.initLogger = function initLogger(logLevel, logFilePath) {
 
 function getBody(body) {
     if (body instanceof Buffer) {  // Action request
-        body = body.toString();
         body = JSON.stringify(body, null, 8);
         body = body.replace(/\\n/g, "\n");  // To log new lines and not `\n`
     } else {  // Other requests
@@ -71,12 +70,12 @@ function getBody(body) {
 exports.format = function format(tokens, req, res) {
     const reqContextId = req.query["contextId"];
     const reqPageId = req.query["pageId"];
-    const resContextId = res.getHeaders()['scrapy-puppeteer-service-context-id'];
+    const resContextId = res.get('scrapy-puppeteer-service-context-id');
     const closePage = req.query["closePage"] === "1";
 
     const url = req.baseUrl || req.originalUrl || req.url;
-    const query_index = url.indexOf('?');
-    const pathname = query_index !== -1 ? url.slice(1, query_index) : url.slice(1);
+    const queryIndex = url.indexOf('?');
+    const pathname = queryIndex !== -1 ? url.slice(1, queryIndex) : url.slice(1);
 
     return `${pathname} (${tokens.status(req, res)})`
         + "\nRequest parameters:"
