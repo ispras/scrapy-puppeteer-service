@@ -8,7 +8,7 @@ exports.logHTTPMiddleware = function logHTTPMiddleware() {
     logger = loggers.getLogger();
 
     return morgan(
-        loggers.format,
+        loggers.HTTPFormat,
         {
             stream: {
                 write: (message) => logger.http(message),

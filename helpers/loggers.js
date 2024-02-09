@@ -66,7 +66,7 @@ function getBody(body) {
     return body;
 }
 
-exports.format = function format(tokens, req, res) {
+exports.HTTPFormat = function HTTPFormat(tokens, req, res) {
     const reqContextId = req.query["contextId"];
     const reqPageId = req.query["pageId"];
     const resContextId = res.get('scrapy-puppeteer-service-context-id');
