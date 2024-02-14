@@ -173,11 +173,19 @@ exports.performAction = async function performAction(request, action) {
             await page.setExtraHTTPHeaders(extraHeaders);
         }
 
+        const contextId = page.browserContext().id;
+        const pageId = page.target()._targetId;
+
         try {
-            return await action(page, request);
+            const response = await action(page, request);
+            return {
+                ...response,
+                contextId,
+                pageId,
+            };
         } catch (err) {
-            err.contextId = page.browserContext().id;
-            err.pageId = page.target()._targetId;
+            err.contextId = contextId;
+            err.pageId = pageId;
             throw err;
         }
     });

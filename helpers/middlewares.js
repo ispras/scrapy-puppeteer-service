@@ -1,6 +1,22 @@
+const morgan = require('morgan');
+const loggers = require('./loggers');
 const exceptions = require("./exceptions");
 
-exports.exceptionMiddleware = async function exceptionMiddleware(err, req, res, next) {
+
+exports.logHTTPMiddleware = function logHTTPMiddleware() {
+    const logger = loggers.getLogger();
+
+    return morgan(
+        loggers.HTTPFormat,
+        {
+            stream: {
+                write: (message) => logger.http(message),
+            },
+        }
+    );
+}
+
+exports.processExceptionMiddleware = async function processExceptionMiddleware(err, req, res, next) {
     if (res.headersSent) {
         return next(err);
     }
@@ -30,4 +46,13 @@ exports.exceptionMiddleware = async function exceptionMiddleware(err, req, res, 
     });
 
     next(err);
+}
+
+exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next) {
+    loggers.getLogger().error({
+        message: err,
+        contextId: req.query["contextId"],
+        pageId: req.query["pageId"],
+    });
+    next();
 }
