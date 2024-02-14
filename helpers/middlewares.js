@@ -2,10 +2,9 @@ const morgan = require('morgan');
 const loggers = require('./loggers');
 const exceptions = require("./exceptions");
 
-let logger;
 
 exports.logHTTPMiddleware = function logHTTPMiddleware() {
-    logger = loggers.getLogger();
+    const logger = loggers.getLogger();
 
     return morgan(
         loggers.HTTPFormat,
@@ -49,8 +48,8 @@ exports.processExceptionMiddleware = async function processExceptionMiddleware(e
     next(err);
 }
 
-exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next){
-    logger.error({
+exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next) {
+    loggers.getLogger().error({
         message: err,
         contextId: req.query["contextId"],
         pageId: req.query["pageId"],
