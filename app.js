@@ -27,6 +27,8 @@ const app = express();
 
 const LOG_LEVEL = process.env.LOG_LEVEL || "http";
 const LOG_FILE = process.env.LOG_FILE;
+const LOGSTASH_HOST = process.env.LOGSTASH_HOST;
+const LOGSTASH_PORT = process.env.LOGSTASH_HOST;
 const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
@@ -34,7 +36,7 @@ const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
 const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA;
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
 
-loggers.initLogger(LOG_LEVEL, LOG_FILE);
+loggers.initLogger(LOG_LEVEL, LOG_FILE, LOGSTASH_HOST, LOGSTASH_PORT);
 
 async function setupBrowser() {
     try {

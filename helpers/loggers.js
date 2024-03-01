@@ -1,4 +1,5 @@
 const winston = require('winston');
+const LogstashTransport = require('winston-logstash/lib/winston-logstash-latest')
 
 const logPrinter = winston.format.printf((info) => {
     let log = `[${info.timestamp}] ${info.level}: ${info.message}`;
@@ -29,7 +30,7 @@ const consoleFormat = winston.format.combine(
 
 let logger;
 
-function createTransports(logLevel, logFilePath) {
+function createTransports(logLevel, logFilePath, logstashHost, logstashPort) {
     let transports = [];
 
     transports.push(new winston.transports.Console({
@@ -43,12 +44,20 @@ function createTransports(logLevel, logFilePath) {
             format: fileFormat,
         }));
     }
+    if (logstashHost !== undefined && logstashPort !== undefined) {
+        transports.push(new LogstashTransport({
+            host: logstashHost,
+            port: logstashPort,
+            format: fileFormat,
+            level: logLevel,
+        }))
+    }
 
     return transports;
 }
 
-exports.initLogger = function initLogger(logLevel, logFilePath) {
-    const transports = createTransports(logLevel, logFilePath);
+exports.initLogger = function initLogger(logLevel, logFilePath, logstashHost, logstashPort) {
+    const transports = createTransports(logLevel, logFilePath, logstashHost, logstashPort);
 
     logger = winston.createLogger({
         level: logLevel,
