@@ -1,4 +1,6 @@
+const exceptions = require("./exceptions");
 const { proxyRequest } = require('puppeteer-proxy');
+
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
 async function findContextInBrowser(browser, contextId) {
@@ -7,7 +9,7 @@ async function findContextInBrowser(browser, contextId) {
             return context;
         }
     }
-    throw new Error("Context not found");
+    throw new exceptions.ContextNotFoundError();
 }
 
 async function findPageInContext(context, pageId) {
@@ -16,7 +18,7 @@ async function findPageInContext(context, pageId) {
             return page;
         }
     }
-    throw new Error("Page not found");
+    throw new exceptions.PageNotFoundError();
 }
 
 exports.closeContexts = async function closeContexts(browser, contextIds) {
@@ -178,11 +180,19 @@ exports.performAction = async function performAction(request, action) {
             await page.setExtraHTTPHeaders(extraHeaders);
         }
 
+        const contextId = page.browserContext().id;
+        const pageId = page.target()._targetId;
+
         try {
-            return await action(page, request);
+            const response = await action(page, request);
+            return {
+                ...response,
+                contextId,
+                pageId,
+            };
         } catch (err) {
-            err.contextId = page.browserContext().id;
-            err.pageId = page.target()._targetId;
+            err.contextId = contextId;
+            err.pageId = pageId;
             throw err;
         }
     });

@@ -4,7 +4,6 @@ const puppeteer = require('puppeteer-extra')
 const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const cookieParser = require('cookie-parser');
-const logger = require('morgan');
 const bodyParser = require('body-parser');
 const AsyncLock = require('async-lock');
 
@@ -22,15 +21,20 @@ const harRouter = require('./routes/har');
 const closeContextRouter = require('./routes/close_context');
 
 const middlewares = require('./helpers/middlewares')
+const loggers = require("./helpers/loggers");
 
 const app = express();
 
+const LOG_LEVEL = process.env.LOG_LEVEL || "http";
+const LOG_FILE = process.env.LOG_FILE;
 const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
 const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA;
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
+
+loggers.initLogger(LOG_LEVEL, LOG_FILE);
 
 async function setupBrowser() {
     try {
@@ -81,7 +85,7 @@ async function setupBrowser() {
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-app.use(logger('dev'));
+app.use(middlewares.logHTTPMiddleware());
 app.use(bodyParser.raw({inflate: true, limit: '200kb', type: 'application/javascript'}));
 app.use(cookieParser());
 
@@ -98,6 +102,7 @@ app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
 app.use('/close_context', closeContextRouter);
 
-app.use(middlewares.exceptionMiddleware);
+app.use(middlewares.processExceptionMiddleware);
+app.use(middlewares.logExceptionMiddleware);
 
 module.exports = app;
