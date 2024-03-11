@@ -28,7 +28,7 @@ const app = express();
 const LOG_LEVEL = process.env.LOG_LEVEL || "http";
 const LOG_FILE = process.env.LOG_FILE;
 const LOGSTASH_HOST = process.env.LOGSTASH_HOST;
-const LOGSTASH_PORT = process.env.LOGSTASH_HOST;
+const LOGSTASH_PORT = process.env.LOGSTASH_PORT;
 const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
