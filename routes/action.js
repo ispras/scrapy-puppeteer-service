@@ -40,7 +40,7 @@ router.post('/', async function (req, res, next) {
         let response = await utils.performAction(req, async (page, request) => {
             return {
                 ...utils.getIds(page),
-                ...await action(page, request)
+                data: await action(page, request)
             }
         });
         res.header('scrapy-puppeteer-service-context-id', response.contextId);
