@@ -37,11 +37,10 @@ router.post('/', async function (req, res, next) {
             throw new Error("Invalid action function");
         }
 
-        // let response = await utils.performAction(req, action);
-        let response = await utils.performAction(req, (page, request) => {
+        let response = await utils.performAction(req, async (page, request) => {
             return {
                 ...utils.getIds(page),
-                ...action(page, request)
+                ...await action(page, request)
             }
         });
         res.header('scrapy-puppeteer-service-context-id', response.contextId);
