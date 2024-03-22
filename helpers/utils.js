@@ -64,6 +64,18 @@ async function wait(page, waitFor) {
     }
 }
 
+/***
+ * This function returns `pageId` and `contextId` of corresponding page.
+ * @param page Not closed page
+ * @returns Object
+ */
+exports.getIds = function getIds(page) {
+    return {
+        contextId: page.browserContext().id,
+        pageId: page.target()._targetId,
+    }
+}
+
 exports.formResponse = async function formResponse(page, closePage, waitFor) {
     if (waitFor) {
         await wait(page, waitFor);
@@ -177,12 +189,7 @@ exports.performAction = async function performAction(request, action) {
         const pageId = page.target()._targetId;
 
         try {
-            const response = await action(page, request);
-            return {
-                ...response,
-                contextId,
-                pageId,
-            };
+            return await action(page, request);
         } catch (err) {
             err.contextId = contextId;
             err.pageId = pageId;
