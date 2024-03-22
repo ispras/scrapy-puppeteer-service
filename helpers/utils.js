@@ -177,12 +177,12 @@ exports.performAction = async function performAction(request, action) {
         const pageId = page.target()._targetId;
 
         try {
-            const response = await action(page, request);
-            return {
-                ...response,
-                contextId,
-                pageId,
-            };
+            return await action(page, request);
+            // return {
+            //     ...response,
+            //     contextId,
+            //     pageId,
+            // };
         } catch (err) {
             err.contextId = contextId;
             err.pageId = pageId;

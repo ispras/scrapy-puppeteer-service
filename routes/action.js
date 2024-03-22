@@ -31,7 +31,8 @@ router.post('/', async function (req, res, next) {
         //check action function exists
         if (!(typeof action === "function" && action.length >= 1)) {
             res.status("400");
-            res.send("Valid action function: \"async function action(page) { ... some actions with page in puppeteer " +
+            res.send("Valid action function: \"async function action(page, request) " +
+                "{ ... some actions with request and page in puppeteer " +
                 "syntax};\"");
             throw new Error("Invalid action function");
         }
