@@ -64,6 +64,13 @@ async function wait(page, waitFor) {
     }
 }
 
+exports.getIds = function getIds(page) {
+    return {
+        contextId: page.browserContext().id,
+        pageId: page.target()._targetId,
+    }
+}
+
 exports.formResponse = async function formResponse(page, closePage, waitFor) {
     if (waitFor) {
         await wait(page, waitFor);

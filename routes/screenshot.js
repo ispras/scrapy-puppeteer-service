@@ -8,6 +8,7 @@ async function action(page, request) {
     request.body.options.encoding = "base64"; // return in base64 
     let screenshot = await page.screenshot(request.body.options);
     return {
+        ...utils.getIds(page),
         screenshot: screenshot
     };
 }
