@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+
+  scrapy-puppeteer-service:
+    build: .
+    cap_add:
+      - SYS_ADMIN
+    ports:
+      - "3000:3000"
+    environment:
+      TIMEOUT: 60000
+      LOGSTASH_HOST: logstash
+      LOGSTASH_PORT: 9001
+    volumes:
+      - ./wait_for_logstash.sh:/app/wait_for_logstash.sh
+    depends_on:
+      - logstash
+    command: [ "sh", "-c", "./wait_for_logstash.sh && yarn start" ]
+
+  logstash:
+    image: opensearchproject/logstash-oss-with-opensearch-output-plugin:7.16.3
+    ports:
+      - "9001:9001"
+      - "9600:9600"
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    depends_on:
+      - opensearch
+
+  opensearch:
+    image: opensearchproject/opensearch:2.10.0
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - plugins.security.ssl.http.enabled=false
+      - DISABLE_SECURITY_PLUGIN=true
+
+  dashboards:
+    image: opensearchproject/opensearch-dashboards:2.10.0
+    ports:
+      - "5601:5601"
+    environment:
+      OPENSEARCH_HOSTS: http://opensearch:9200
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"

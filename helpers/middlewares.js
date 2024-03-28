@@ -2,7 +2,9 @@ const morgan = require('morgan');
 const loggers = require('./loggers');
 const exceptions = require("./exceptions");
 
-
+/***
+ * Middleware for logging HTTP request-response.
+***/
 exports.logHTTPMiddleware = function logHTTPMiddleware() {
     const logger = loggers.getLogger();
 
@@ -16,6 +18,9 @@ exports.logHTTPMiddleware = function logHTTPMiddleware() {
     );
 }
 
+/***
+ * Middleware for processing exceptions.
+***/
 exports.processExceptionMiddleware = async function processExceptionMiddleware(err, req, res, next) {
     if (res.headersSent) {
         return next(err);
@@ -48,6 +53,9 @@ exports.processExceptionMiddleware = async function processExceptionMiddleware(e
     next(err);
 }
 
+/***
+ * Middleware for logging exceptions.
+***/
 exports.logExceptionMiddleware = async function logExceptionMiddleware(err, req, res, next) {
     loggers.getLogger().error({
         message: err,

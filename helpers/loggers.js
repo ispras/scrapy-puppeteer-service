@@ -1,4 +1,5 @@
 const winston = require('winston');
+const LogstashTransport = require('winston-logstash/lib/winston-logstash-latest')
 
 const logPrinter = winston.format.printf((info) => {
     let log = `[${info.timestamp}] ${info.level}: ${info.message}`;
@@ -29,7 +30,7 @@ const consoleFormat = winston.format.combine(
 
 let logger;
 
-function createTransports(logLevel, logFilePath) {
+function createTransports(logLevel, logFilePath, logstashHost, logstashPort) {
     let transports = [];
 
     transports.push(new winston.transports.Console({
@@ -43,12 +44,29 @@ function createTransports(logLevel, logFilePath) {
             format: fileFormat,
         }));
     }
+    if (logstashHost !== undefined && logstashPort !== undefined) {
+        transports.push(new LogstashTransport({
+            host: logstashHost,
+            port: logstashPort,
+            format: fileFormat,
+            level: logLevel,
+        }))
+    }
 
     return transports;
 }
 
-exports.initLogger = function initLogger(logLevel, logFilePath) {
-    const transports = createTransports(logLevel, logFilePath);
+/***
+ * The function initializes logger.
+ *
+ * @param logLevel Logging level which controls amount of logs
+ * @param logFilePath (Optional) Logging file to which logs will be written
+ * @param logstashHost (Optional) Logstash Host (e.g. 0.0.0.0)
+ * @param logstashPort (Optional) Logstash Port (e.g. 9091)
+ * @returns void
+***/
+exports.initLogger = function initLogger(logLevel, logFilePath, logstashHost, logstashPort) {
+    const transports = createTransports(logLevel, logFilePath, logstashHost, logstashPort);
 
     logger = winston.createLogger({
         level: logLevel,
@@ -66,6 +84,9 @@ function getBody(body) {
     return body;
 }
 
+/***
+ * Format for the request-response logging messages.
+***/
 exports.HTTPFormat = function HTTPFormat(tokens, req, res) {
     const reqContextId = req.query["contextId"];
     const reqPageId = req.query["pageId"];
@@ -85,6 +106,9 @@ exports.HTTPFormat = function HTTPFormat(tokens, req, res) {
         + `${!reqContextId && resContextId ? `\nCreated page with ${resContextId} contextId` : ""}`;
 }
 
+/***
+ * Get instance of service's logger.
+***/
 exports.getLogger = function getLogger() {
     return logger;
 }

@@ -2214,6 +2214,22 @@ which@^1.2.9:
   dependencies:
     isexe "^2.0.0"
 
+winston-logstash@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/winston-logstash/-/winston-logstash-1.2.1.tgz#c2b8cd6ccaf502eaf97bb64c23a38c1abc245657"
+  integrity sha512-sa8AxlL0vb5OdGJpL7ZitSIKq9GtdqrTN6eKYe6CoMTDmOIOvJyVAMiZGIvwxkGRbCNGoGKCvx9vxwkdI6OWww==
+  dependencies:
+    winston-transport "4.5.0"
+
+winston-transport@4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/winston-transport/-/winston-transport-4.5.0.tgz#6e7b0dd04d393171ed5e4e4905db265f7ab384fa"
+  integrity sha512-YpZzcUzBedhlTAfJg6vJDlyEai/IFMIVcaEZZyl3UXIl4gmqRpU7AE89AHLkbzLUsv0NVmw7ts+iztqKxxPW1Q==
+  dependencies:
+    logform "^2.3.2"
+    readable-stream "^3.6.0"
+    triple-beam "^1.3.0"
+
 winston-transport@^4.5.0:
   version "4.6.0"
   resolved "https://registry.npmjs.org/winston-transport/-/winston-transport-4.6.0.tgz"
