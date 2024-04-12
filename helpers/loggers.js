@@ -6,9 +6,8 @@ const logPrinter = winston.format.printf((info) => {
 
     if (info.stack) {
         log = `${log}`
-            + "\nRequest parameters:"
-            + `\n    contextId: ${info.contextId}`
-            + `\n    pageId: ${info.pageId}`
+            + `\ncontextId: ${info.contextId}`
+            + `\npageId: ${info.pageId}`
             + `\n${info.stack}\n`
     }
 
@@ -98,10 +97,10 @@ exports.HTTPFormat = function HTTPFormat(tokens, req, res) {
     const pathname = queryIndex !== -1 ? url.slice(1, queryIndex) : url.slice(1);
 
     return `${pathname} (${tokens.status(req, res)})`
+        + `${reqContextId ? `\ncontextId: ${reqContextId}` : ""}`
+        + `${reqPageId ? `\npageId: ${reqPageId}` : ""}`
+        + `\nclosePage: ${closePage}`
         + "\nRequest parameters:"
-        + `${reqContextId ? `\n    contextId: ${reqContextId}` : ""}`
-        + `${reqPageId ? `\n    pageId: ${reqPageId}` : ""}`
-        + `\n    closePage: ${closePage}`
         + `\n    body: ${getBody(req.body)}`
         + `${!reqContextId && resContextId ? `\nCreated page with ${resContextId} contextId` : ""}`;
 }
