@@ -23,21 +23,19 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  */
 
 async function action(page, request) {
-
     let recaptcha_data;
 
     if (request.body.solve_recaptcha) {
         recaptcha_data = await page.solveRecaptchas();
-    }
-    else {
+    } else {
         recaptcha_data = await page.findRecaptchas();
     }
 
     const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT };
-    const close_page = request.query.closePage ||
+    request.query.closePage = request.query.closePage ||
         (request.body.close_on_empty && recaptcha_data['captchas'].length === 0)
     return {
-        ...await utils.formResponse(page, close_page, waitOptions),
+        ...await utils.getContents(page, waitOptions),
         recaptcha_data: recaptcha_data,
     }
 }

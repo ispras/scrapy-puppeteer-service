@@ -8,13 +8,12 @@ async function action(page, request) {
     request.body.options.encoding = "base64"; // return in base64 
     let screenshot = await page.screenshot(request.body.options);
     return {
-        ...utils.getIds(page),
         screenshot: screenshot
     };
 }
 
 // Method that returns screenshots of pages
-// more description of options you can see on github:
+// more description of options you can see on GitHub:
 // https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions
 router.post('/', async function (req, res, next) {
 

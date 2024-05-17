@@ -39,7 +39,6 @@ router.post('/', async function (req, res, next) {
 
         let response = await utils.performAction(req, async (page, request) => {
             return {
-                ...utils.getIds(page),
                 data: await action(page, request)
             }
         });
