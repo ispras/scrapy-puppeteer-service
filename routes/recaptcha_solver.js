@@ -32,13 +32,15 @@ async function action(page, request) {
     }
 
     const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT };
+    const contents = await utils.getContents(page, waitOptions);
+
     if (request.query.closePage ||
         (request.body.close_on_empty && recaptcha_data['captchas'].length === 0)) {
         await page.close();
     }
 
     return {
-        ...await utils.getContents(page, waitOptions),
+        ...contents,
         recaptcha_data: recaptcha_data,
     }
 }
