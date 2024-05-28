@@ -184,8 +184,10 @@ exports.performAction = async function performAction(request, action) {
             throw err;
         }
 
-        if (request.query.closePage) {
+        if (request.query.closePage && !page.isClosed()) {
             await page.close();
+        }
+        if (page.isClosed()) {
             delete response.pageId;
         }
 
