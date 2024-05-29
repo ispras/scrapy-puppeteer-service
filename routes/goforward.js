@@ -5,7 +5,7 @@ const router = express.Router();
 
 async function action(page, request) {
     await page.goForward(request.body.navigationOptions);
-    return utils.formResponse(page, request.query.closePage, request.body.waitOptions);
+    return await utils.getContents(page, request.body.waitOptions);
 }
 
 router.post('/', async function (req, res, next) {

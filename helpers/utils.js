@@ -64,26 +64,27 @@ async function wait(page, waitFor) {
     }
 }
 
-exports.formResponse = async function formResponse(page, closePage, waitFor) {
+/***
+ * This function returns `pageId` and `contextId` of corresponding page.
+ * @param page
+ * @returns Promise
+ */
+async function getIds(page) {
+    return {
+        contextId: page.browserContext().id,
+        pageId: page.target()._targetId,
+    }
+}
+
+exports.getContents = async function getContents(page, waitFor) {
     if (waitFor) {
         await wait(page, waitFor);
     }
 
-    const response = {
-        contextId: page.browserContext().id,
+    return {
         html: await page.content(),
         cookies: await page.cookies(),
     };
-
-    if (closePage) {
-        await page.close();
-    }
-
-    if (!page.isClosed()) {
-        response.pageId = page.target()._targetId;
-    }
-
-    return response;
 };
 
 async function newPage(context) {
@@ -173,20 +174,23 @@ exports.performAction = async function performAction(request, action) {
             await page.setExtraHTTPHeaders(extraHeaders);
         }
 
-        const contextId = page.browserContext().id;
-        const pageId = page.target()._targetId;
+        const response = await getIds(page);
 
         try {
-            const response = await action(page, request);
-            return {
-                ...response,
-                contextId,
-                pageId,
-            };
+            Object.assign(response, await action(page, request));
         } catch (err) {
-            err.contextId = contextId;
-            err.pageId = pageId;
+            err.contextId = response.contextId;
+            err.pageId = response.pageId;
             throw err;
         }
+
+        if (request.query.closePage && !page.isClosed()) {
+            await page.close();
+        }
+        if (page.isClosed()) {
+            delete response.pageId;
+        }
+
+        return response;
     });
 };

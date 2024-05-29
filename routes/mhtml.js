@@ -3,11 +3,13 @@ const utils = require('../helpers/utils');
 const router = express.Router();
 
 
-async function captureSnapshot(page) {
+async function captureSnapshot(page, request) {
     const cdpSession = await page.target().createCDPSession();
     const { data } = await cdpSession.send('Page.captureSnapshot', { format: 'mhtml' });
     await cdpSession.detach()
-    return { mhtml: data };
+    return {
+        mhtml: data,
+    };
 }
 
 /**

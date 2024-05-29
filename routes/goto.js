@@ -5,7 +5,7 @@ const router = express.Router();
 
 async function action(page, request) {
     await page.goto(request.body.url, request.body.navigationOptions);
-    return utils.formResponse(page, request.query.closePage, request.body.waitOptions);
+    return await utils.getContents(page, request.body.waitOptions);
 }
 
 // body = {

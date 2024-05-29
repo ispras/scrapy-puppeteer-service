@@ -14,7 +14,7 @@ async function action(page, request) {
         });
     }
     const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT};
-    return utils.formResponse(page, request.query.closePage, waitOptions);
+    return utils.getContents(page, waitOptions);
 }
 
 // Method that scrolls page to a certain selector.

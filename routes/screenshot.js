@@ -13,7 +13,7 @@ async function action(page, request) {
 }
 
 // Method that returns screenshots of pages
-// more description of options you can see on github:
+// more description of options you can see on GitHub:
 // https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions
 router.post('/', async function (req, res, next) {
 

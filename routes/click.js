@@ -15,7 +15,7 @@ async function action(page, request) {
         await page.click(request.body.selector, request.body.clickOptions);
     }
     const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT };
-    return utils.formResponse(page, request.query.closePage, waitOptions);
+    return await utils.getContents(page, waitOptions);
 }
 
 /**
