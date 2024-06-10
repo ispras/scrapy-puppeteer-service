@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const AsyncLock = require('async-lock');
 
 const indexRouter = require('./routes/index');
+const healthCheckRouter = require('./routes/health_check');
 const gotoRouter = require('./routes/goto');
 const backRouter = require('./routes/goback');
 const forwardRouter = require('./routes/goforward');
@@ -91,6 +92,7 @@ app.use(bodyParser.raw({inflate: true, limit: '200kb', type: 'application/javasc
 app.use(cookieParser());
 
 app.use('/', indexRouter);
+app.use('/health_check', healthCheckRouter);
 app.use('/goto', gotoRouter);
 app.use('/back', backRouter);
 app.use('/forward', forwardRouter);
