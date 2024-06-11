@@ -2,8 +2,26 @@ const morgan = require('morgan');
 const loggers = require('./loggers');
 const exceptions = require("./exceptions");
 
+const MAX_PAGE_COUNTER = 100;  // TODO: to make it through env
+let pageCounter = 0;  // TODO: to make it available for other modules
+
+exports.limitContextMiddleware = async function limitContextMiddleware(req, res, next) {
+    if (req.method !== "POST") {
+        next();
+        return;
+    }
+
+    if (pageCounter > MAX_PAGE_COUNTER) {  // TODO: to check for endpoint
+        res.status(429);  // Too many requests
+        res.send({msg: "Page counter expired"});
+        next()
+    }
+
+    next()
+}
+
 /***
- * Middleware for logging HTTP request-response.
+ * Returns the middleware for logging HTTP request-response.
 ***/
 exports.logHTTPMiddleware = function logHTTPMiddleware() {
     const logger = loggers.getLogger();
