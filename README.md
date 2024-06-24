@@ -55,9 +55,15 @@ This GET method allows to get liveliness of the server.
 You get such responses with 200 status code if the server is up:
 ```json5
 {
-    uptime: 222.555,  // seconds of uptime
-    message: "OK",  // good or error message
-    timestamp: 1718029086542,  // seconds since the epoch
+    "timestamp": 1719222396341,  // seconds since the epoch
+    "uptime": 222.555,  // seconds of uptime
+    "message": "OK",  // good or error message
+    "browser": {  // connected browser info
+        "connection": true,  // is browser connected
+        "version": "Chrome/113.0.5672.63",  // browser version
+        "contexts": 1,  // number of contexts
+        "pages": 1,  // number of pages
+    }
 }
 ```
 Otherwise, you get 503 status code.

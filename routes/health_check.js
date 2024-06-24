@@ -14,10 +14,22 @@ const router = express.Router();
  **/
 router.get('/', async (req, res, next) => {
     const healthCheck = {
+        timestamp: Date.now(),
         uptime: process.uptime(),
         message: "OK",
-        timestamp: Date.now(),
     };
+
+    const browser = req.app.get('browser');
+    if (browser) {
+        healthCheck.browser = {
+            connection: browser.isConnected(),
+            version: await browser.version(),
+            contexts: browser.browserContexts().length,
+            pages: (await browser.pages()).length,
+        }
+    } else {
+        healthCheck.message = "Browser is undefined";
+    }
 
     try {
         res.send(healthCheck);
