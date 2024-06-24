@@ -16,11 +16,13 @@ exports.processExceptionMiddleware = async function processExceptionMiddleware(e
         res.header('scrapy-puppeteer-service-context-id', contextId);
     }
 
-    if (err.contextId) {  // there was a context, but something went wrong
+    if (err instanceof exceptions.TooManyContextsError) {
+        res.status(429);  // Too Many Requests
+    } else if (err.contextId) {  // there was a context, but something went wrong
         res.status(500);
     } else {  // No context. Possibly, our service was restarted
         if (err instanceof exceptions.PageNotFoundError || err instanceof exceptions.ContextNotFoundError) {
-            res.status(422);
+            res.status(422);  // Unprocessable Entity
         } else {
             res.status(500);
         }
