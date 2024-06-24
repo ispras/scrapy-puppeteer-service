@@ -1,6 +1,6 @@
 const exceptions = require("./exceptions");
 const { proxyRequest } = require('puppeteer-proxy');
-const limitContext = require('./middlewares/limit_context');
+const limitContext = require('./limit_context');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
@@ -109,9 +109,17 @@ async function newPage(context) {
 }
 
 async function newContext(browser, options = {}) {
-    const context = await browser.createIncognitoBrowserContext(options);
-    limitContext.incContextCounter();
-    return context;
+    if (!limitContext.canCreateContext()) {
+        throw new exceptions.TooManyContextsError();
+    }
+
+    try {
+        limitContext.incContextCounter();
+        return await browser.createIncognitoBrowserContext(options);
+    } catch (err) {
+        limitContext.decContextCounter();
+        throw err;
+    }
 }
 
 function getProxy(request) {

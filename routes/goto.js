@@ -1,14 +1,11 @@
 const express = require('express');
 const utils = require('../helpers/utils');
 const router = express.Router();
-const limitContextMiddleware = require('../helpers/middlewares').limitContext.limitContextMiddleware;
 
 async function action(page, request) {
     await page.goto(request.body.url, request.body.navigationOptions);
     return await utils.getContents(page, request.body.waitOptions);
 }
-
-router.use(limitContextMiddleware);
 
 // body = {
 //     "url": <string> URL to navigate page to. The url should include scheme, e.g. https://.

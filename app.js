@@ -21,6 +21,7 @@ const harRouter = require('./routes/har');
 const closeContextRouter = require('./routes/close_context');
 
 const middlewares = require('./helpers/middlewares');
+const limitContext = require('./helpers/limit_context');
 const loggers = require("./helpers/loggers");
 
 const app = express();
@@ -37,7 +38,7 @@ const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA;
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
 const MAX_CONCURRENT_CONTEXTS = process.env.MAX_CONCURRENT_CONTEXTS === "Infinity"? Infinity : parseInt(process.env.MAX_CONCURRENT_CONTEXTS);
 
-middlewares.limitContext.initContextCounter(MAX_CONCURRENT_CONTEXTS);
+limitContext.initContextCounter(MAX_CONCURRENT_CONTEXTS);
 loggers.initLogger(LOG_LEVEL, LOG_FILE, LOGSTASH_HOST, LOGSTASH_PORT);
 
 async function setupBrowser() {
