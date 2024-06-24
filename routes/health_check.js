@@ -7,9 +7,15 @@ const router = express.Router();
  *       5xx otherwise.
  * As a response returns an object:
  * {
+ *     timestamp: timestamp,
  *     uptime: number,
  *     message: string,
- *     timestamp: timestamp,
+ *     browser: {  // browser info
+ *         connection: boolean,
+ *         version: string,
+ *         contexts: number,
+ *         pages: number,
+ *     }
  * }
  **/
 router.get('/', async (req, res, next) => {
