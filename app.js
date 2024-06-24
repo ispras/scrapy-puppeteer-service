@@ -36,7 +36,7 @@ const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
 const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA;
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
-const MAX_CONCURRENT_CONTEXTS = process.env.MAX_CONCURRENT_CONTEXTS === "Infinity"? Infinity : parseInt(process.env.MAX_CONCURRENT_CONTEXTS);
+const MAX_CONCURRENT_CONTEXTS = process.env.MAX_CONCURRENT_CONTEXTS === "Infinity" ? Infinity : parseInt(process.env.MAX_CONCURRENT_CONTEXTS);
 
 limitContext.initContextCounter(MAX_CONCURRENT_CONTEXTS);
 loggers.initLogger(LOG_LEVEL, LOG_FILE, LOGSTASH_HOST, LOGSTASH_PORT);
