@@ -34,6 +34,7 @@ router.get('/', async (req, res, next) => {
             pages: (await browser.pages()).length,
         }
     } else {
+        res.status(503);  // Service Unavailable
         healthCheck.message = "Browser is undefined";
     }
 
