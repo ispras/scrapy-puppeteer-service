@@ -49,9 +49,28 @@ Also you can add extra http headers to each request that is made on page.
 }
 ```
 
+### **/health_check**
+
+This GET method allows to get liveliness of the server.
+You get such responses with 200 status code if the server is up:
+```json5
+{
+    "timestamp": 1719222396341,  // seconds since the epoch
+    "uptime": 222.555,  // seconds of uptime
+    "message": "OK",  // good or error message
+    "browser": {  // connected browser info
+        "connection": true,  // is browser connected
+        "version": "Chrome/113.0.5672.63",  // browser version
+        "contexts": 1,  // number of contexts
+        "pages": 1,  // number of pages
+    }
+}
+```
+Otherwise, you get 503 status code.
+
 ### **/goto**
 
-This method allows to goto a page with a specific url in puppeteer.
+This POST method allows to goto a page with a specific url in puppeteer.
 
 Params: 
 
@@ -84,7 +103,7 @@ Example request body
 ```
 
 ### **/back** and **/forward**
-These methods help to navigate back and forward to see previously seen pages.
+These POST methods help to navigate back and forward to see previously seen pages.
 
 Example request body
 ```json5
@@ -100,7 +119,7 @@ Example request body
 
 ### **/click**
 
-This method allows to click on first element that is matched by selector and return page result.
+This POST method allows to click on first element that is matched by selector and return page result.
 
 Example request body:
 ```json5
@@ -122,7 +141,7 @@ Example request body:
 
 ### **/scroll**
 
-This method allows to scroll page to the first element that is matched by selector and returns page result.
+This POST method allows to scroll page to the first element that is matched by selector and returns page result.
 
 Example request body:
 ```json5
@@ -136,7 +155,7 @@ Example request body:
 
 ### **/action**
 
-Body of this request should be a js code that declares function action with at least page
+Body of this POST request should be a js code that declares function action with at least page
 parameter. The content type of request should be:
 ```http request
  Content-Type: application/javascript
@@ -159,7 +178,7 @@ async function action(page, request) {
 
 ### **/screenshot**
 
-This method returns screenshots of current page more.  
+This POST method returns screenshots of current page more.  
 Description of options you can see on [puppeteer GitHub](https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions).
 The path options is omitted in options. Also the only possibly encoding is `base64`.
                                                             
@@ -176,7 +195,7 @@ Example request body:
 
 ### **/recaptcha_solver**
 
-This method implements recaptcha solving based on the [puppeteer-extra-plugin-recaptcha](https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-recaptcha).
+This POST method implements recaptcha solving based on the [puppeteer-extra-plugin-recaptcha](https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-recaptcha).
 
 Example request body:
 ```json5
@@ -190,7 +209,7 @@ Example request body:
 ```
 
 ### **/close_context**
-This method close browser context and all its pages.
+This POST method close browser context and all its pages.
 Make sure you finished all your requests to this context.
 
 ## Environment variables
