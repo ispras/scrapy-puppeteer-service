@@ -13,3 +13,11 @@ exports.ContextNotFoundError = class ContextNotFoundError extends Error {
         this.name = "ContextNotFoundError";
     }
 }
+
+exports.TooManyContextsError = class TooManyContextsError extends Error {
+    constructor(message="Could not create new context due to restriction", ...args) {
+        super(message, ...args);
+        this.message = message;
+        this.name = "TooManyContextsError";
+    }
+}

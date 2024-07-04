@@ -21,7 +21,8 @@ const mhtmlRouter = require('./routes/mhtml');
 const harRouter = require('./routes/har');
 const closeContextRouter = require('./routes/close_context');
 
-const middlewares = require('./helpers/middlewares')
+const middlewares = require('./helpers/middlewares');
+const limitContext = require('./helpers/limit_context');
 const loggers = require("./helpers/loggers");
 
 const app = express();
@@ -36,12 +37,14 @@ const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
 const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA;
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
+const MAX_CONCURRENT_CONTEXTS = process.env.MAX_CONCURRENT_CONTEXTS === "Infinity" ? Infinity : parseInt(process.env.MAX_CONCURRENT_CONTEXTS);
 
+limitContext.initContextCounter(MAX_CONCURRENT_CONTEXTS);
 loggers.initLogger(LOG_LEVEL, LOG_FILE, LOGSTASH_HOST, LOGSTASH_PORT);
 
 async function setupBrowser() {
     try {
-        if (TOKEN_2CAPTCHA) {  // If token is given then RecapcthaPlugin is activated
+        if (TOKEN_2CAPTCHA) {  // If token is given then RecaptchaPlugin is activated
             puppeteer.use(
                 RecaptchaPlugin({
                     provider: {

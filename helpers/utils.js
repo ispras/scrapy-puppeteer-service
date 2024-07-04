@@ -1,5 +1,6 @@
 const exceptions = require("./exceptions");
 const { proxyRequest } = require('puppeteer-proxy');
+const limitContext = require('./limit_context');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
@@ -26,6 +27,7 @@ exports.closeContexts = async function closeContexts(browser, contextIds) {
     const closePromises = [];
     for (const context of browser.browserContexts()) {
         if (contextIds.includes(context.id)) {
+            limitContext.decContextCounter();
             closePromises.push(context.close());
         }
     }
@@ -106,6 +108,20 @@ async function newPage(context) {
     return page;
 }
 
+async function newContext(browser, options = {}) {
+    if (!limitContext.canCreateContext()) {
+        throw new exceptions.TooManyContextsError();
+    }
+
+    try {
+        limitContext.incContextCounter();
+        return await browser.createIncognitoBrowserContext(options);
+    } catch (err) {
+        limitContext.decContextCounter();
+        throw err;
+    }
+}
+
 function getProxy(request) {
     if ('body' in request && 'proxy' in request.body) {
         return request.body.proxy;
@@ -127,12 +143,12 @@ exports.getBrowserPage = async function getBrowserPage(browser, request) {
     }
     const proxy = getProxy(request);
     if (!proxy) {
-        const context = await browser.createIncognitoBrowserContext();
+        const context = await newContext(browser);
         return newPage(context);
     }
     const { origin: proxyServer, username, password } = new URL(proxy);
 
-    const context = await browser.createIncognitoBrowserContext({ proxyServer });
+    const context = await newContext(browser, { proxyServer });
     context[PROXY_URL_KEY] = proxy;
     const page = await newPage(context);
     if (username) {
