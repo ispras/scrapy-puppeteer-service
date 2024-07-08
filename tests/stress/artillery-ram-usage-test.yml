@@ -1,0 +1,24 @@
+config:
+  target: http://localhost:3000
+  http:
+    timeout: 60
+  phases:  # 625 VUs
+    - duration: 25
+      arrivalRate: 25
+      name: creating contexts
+scenarios:
+  - flow:
+      - loop:
+          - post:
+              url: '/goto'
+              json:
+                url: "https://demo-site.at.ispras.ru"
+              capture:
+                - json: $.contextId
+                  as: context_id
+          - think: 76  # wait other VUs for (timeout + duration + 1) seconds
+          - post:
+              url: "/close_context"
+              json: ['{{context_id}}']
+          - think: 1
+        count: 1
