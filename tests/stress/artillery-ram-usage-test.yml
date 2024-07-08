@@ -12,7 +12,7 @@ scenarios:
           - post:
               url: '/goto'
               json:
-                url: "https://demo-site.at.ispras.ru"
+                url: "https://pptr.dev"
               capture:
                 - json: $.contextId
                   as: context_id
