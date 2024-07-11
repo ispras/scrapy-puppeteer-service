@@ -228,6 +228,7 @@ Here we list them all with their purpose.
 * `TOKEN_2CAPTCHA = undefined` - token of [2captcha service](https://2captcha.com)
 * `STEALTH_BROWSING = true` - should the service use the [stealth browsing](https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-stealth) mode
 * `MAX_CONCURRENT_CONTEXTS = undefined` - should the service limit the number of contexts
+* `CONTEXT_TIMEOUT = 600000` - time (in ms) after the passage of which the context would close
 
 ## Notes on memory usage
 You need to explicitly close the browser tab once you don't need it (e.g. at the end of the parse method).
