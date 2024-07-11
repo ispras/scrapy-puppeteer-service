@@ -1,5 +1,6 @@
 const exceptions = require("./exceptions");
 const { proxyRequest } = require('puppeteer-proxy');
+const timeoutContext = require('./timeout_context');
 const limitContext = require('./limit_context');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
@@ -28,6 +29,7 @@ exports.closeContexts = async function closeContexts(browser, contextIds) {
     for (const context of browser.browserContexts()) {
         if (contextIds.includes(context.id)) {
             limitContext.decContextCounter();
+            timeoutContext.clearContextTimeout(context);
             closePromises.push(context.close());
         }
     }
@@ -114,8 +116,10 @@ async function newContext(browser, options = {}) {
     }
 
     try {
+        const context = await browser.createIncognitoBrowserContext(options);
         limitContext.incContextCounter();
-        return await browser.createIncognitoBrowserContext(options);
+        timeoutContext.setContextTimeout(context);
+        return context
     } catch (err) {
         limitContext.decContextCounter();
         throw err;
@@ -206,6 +210,8 @@ exports.performAction = async function performAction(request, action) {
         if (page.isClosed()) {
             delete response.pageId;
         }
+
+        timeoutContext.updateContextTimeout(page.browserContext());
 
         return response;
     });
