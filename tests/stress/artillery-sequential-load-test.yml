@@ -1,0 +1,23 @@
+config:
+  target: http://localhost:3000
+  http:
+    timeout: 60
+  phases:
+    - duration: 150  # (34 - 25 + 1) * 10, where 10 is multiplier of arrivalRate
+      arrivalRate: 25  # Starting from 250
+      rampTo: 34  # Ending with 340
+      name: sequential loading
+scenarios:  # Just open and close context instantly
+  - flow:
+    - loop:
+        - post:
+            url: '/goto'
+            json:
+              url: "https://pptr.dev"
+            capture:
+              - json: $.contextId
+                as: context_id
+        - post:
+            url: "/close_context"
+            json: ['{{context_id}}']
+      count: 1

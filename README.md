@@ -230,7 +230,10 @@ Here we list them all with their purpose.
 * `MAX_CONCURRENT_CONTEXTS = undefined` - should the service limit the number of contexts
 
 ## Notes on memory usage
-You need to explicitly close the browser tab once you don't need it (e.g. at the end of the parse method).
+
+You may expect the service to fit 60 open contexts into 1 gigabyte of RAM.
+
+Once you don't need the browser tab you need to explicitly close it (e.g. at the end of the parse method).
 
 ## TODO
 
