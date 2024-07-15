@@ -212,6 +212,12 @@ Example request body:
 This POST method close browser context and all its pages.
 Make sure you finished all your requests to this context.
 
+### **PROMETHEUS_HOST:PROMETHEUS_PORT/metrics**
+
+(for PROMETHEUS_HOST and PROMETHEUS_PORT see [Environment variables](#environment-variables))
+
+This GET method allows to see service's metrics in Prometheus style.
+
 ## Environment variables
 
 The scrapy-puppeteer-service uses several environment variables.
@@ -228,6 +234,8 @@ Here we list them all with their purpose.
 * `TOKEN_2CAPTCHA = undefined` - token of [2captcha service](https://2captcha.com)
 * `STEALTH_BROWSING = true` - should the service use the [stealth browsing](https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-stealth) mode
 * `MAX_CONCURRENT_CONTEXTS = undefined` - should the service limit the number of contexts
+* `PROMETHEUS_HOST = undefined` - host address of the metrics endpoint, if not defined then assigns to "localhost"
+* `PROMETHEUS_PORT = undefined` - port of address of the metrics endpoint, if not defined then assigns to "9464"
 
 ## Notes on memory usage
 

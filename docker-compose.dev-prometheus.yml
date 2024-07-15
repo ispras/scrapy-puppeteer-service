@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+
+  scrapy-puppeteer-service:
+    build: .
+    cap_add:
+      - SYS_ADMIN
+    ports:
+      - "3000:3000"
+      - "9100:9100"
+    environment:
+      TIMEOUT: 60000
+      PROMETHEUS_PORT: 9100
+    depends_on:
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml

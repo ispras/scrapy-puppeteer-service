@@ -1,3 +1,5 @@
+const {createPuppeteerMetrics} = require('./helpers/meter');  // Essential to put it first
+
 const express = require('express');
 const puppeteer = require('puppeteer-extra')
 
@@ -81,6 +83,8 @@ async function setupBrowser() {
     } catch (error) {
         process.exit(1);
     }
+
+    createPuppeteerMetrics(app);
 }
 
 (async () => {
