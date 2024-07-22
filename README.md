@@ -212,6 +212,12 @@ Example request body:
 This POST method close browser context and all its pages.
 Make sure you finished all your requests to this context.
 
+### **PROMETHEUS_HOST:PROMETHEUS_PORT/metrics**
+
+(for PROMETHEUS_HOST and PROMETHEUS_PORT see [Environment variables](#environment-variables))
+
+This GET method allows to see service's metrics in Prometheus style.
+
 ## Environment variables
 
 The scrapy-puppeteer-service uses several environment variables.
@@ -229,9 +235,14 @@ Here we list them all with their purpose.
 * `STEALTH_BROWSING = true` - should the service use the [stealth browsing](https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-stealth) mode
 * `MAX_CONCURRENT_CONTEXTS = undefined` - should the service limit the number of contexts
 * `CONTEXT_TIMEOUT = 600000` - time (in ms) after the passage of which the context would close
+* `PROMETHEUS_HOST = undefined` - host address of the metrics endpoint, if not defined then assigns to "localhost"
+* `PROMETHEUS_PORT = undefined` - port of address of the metrics endpoint, if not defined then assigns to "9464"
 
 ## Notes on memory usage
-You need to explicitly close the browser tab once you don't need it (e.g. at the end of the parse method).
+
+You may expect the service to fit 60 open contexts into 1 gigabyte of RAM.
+
+Once you don't need the browser tab you need to explicitly close it (e.g. at the end of the parse method).
 
 ## TODO
 

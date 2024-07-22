@@ -1,0 +1,7 @@
+scrape_configs:
+  - job_name: "scrapy-puppeteer-service"
+    scrape_interval: "1s"
+    static_configs:
+      - targets: ['scrapy-puppeteer-service:9100']
+        labels:
+          app: 'scrapy-puppeteer-service'
