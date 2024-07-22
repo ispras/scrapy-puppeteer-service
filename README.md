@@ -234,6 +234,7 @@ Here we list them all with their purpose.
 * `TOKEN_2CAPTCHA = undefined` - token of [2captcha service](https://2captcha.com)
 * `STEALTH_BROWSING = true` - should the service use the [stealth browsing](https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-stealth) mode
 * `MAX_CONCURRENT_CONTEXTS = undefined` - should the service limit the number of contexts
+* `CONTEXT_TIMEOUT = 600000` - time (in ms) after the passage of which the context would close
 * `PROMETHEUS_HOST = undefined` - host address of the metrics endpoint, if not defined then assigns to "localhost"
 * `PROMETHEUS_PORT = undefined` - port of address of the metrics endpoint, if not defined then assigns to "9464"
 
