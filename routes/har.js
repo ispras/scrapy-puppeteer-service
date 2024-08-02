@@ -3,27 +3,26 @@ const utils = require('../helpers/utils');
 const router = express.Router();
 const PuppeteerHar = require('puppeteer-har');
 
-
 async function action(page, request) {
     const options = request.body.options;
     const harState = options.hasOwnProperty('har_state') ? options.har_state : null;
 
-    if (harState === "start"){
-        utils.puppeteerHar = new PuppeteerHar(page)
-        await utils.puppeteerHar.start();
-        return {
-            har: "no Har data"
-        };
-    }
-    if (harState === "stop" && utils.puppeteerHar !== null){
-        har_data = await utils.puppeteerHar.stop();
+    if (harState === "stop"){
+        if (!(page.harWriter)){
+            return {har: "no harWriter in this page"}
+        }
+        har_data = await page.harWriter.stop();
         har = JSON.stringify(har_data);
         return {
             har: har
         };
     }
-    return {har: "no Har data"};
+    else
+    {
+        return {har: "incorrect har_state"};
+    }
 }
+
 
 
 //TODO Method that returns har of page downloads using https://www.npmjs.com/package/puppeteer-har

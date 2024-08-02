@@ -2,11 +2,9 @@ const exceptions = require("./exceptions");
 const { proxyRequest } = require('puppeteer-proxy');
 const timeoutContext = require('./timeout_context');
 const limitContext = require('./limit_context');
+const PuppeteerHar = require('puppeteer-har');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
-
-const puppeteerHar = null
-exports.puppeteerHar = puppeteerHar;
 
 async function findContextInBrowser(browser, contextId) {
     for (const context of browser.browserContexts()) {
@@ -144,27 +142,41 @@ function getProxy(request) {
  */
 exports.getBrowserPage = async function getBrowserPage(browser, request) {
     const { contextId, pageId } = request.query;
+    let page;
+
     if (contextId) {
         const context = await findContextInBrowser(browser, contextId);
-        return pageId ? findPageInContext(context, pageId) : newPage(context);
-    }
-    const proxy = getProxy(request);
-    if (!proxy) {
-        const context = await newContext(browser);
-        return newPage(context);
-    }
-    const { origin: proxyServer, username, password } = new URL(proxy);
+        page = pageId ? await findPageInContext(context, pageId) : await newPage(context);
+    } else {
+        const proxy = getProxy(request);
 
-    const context = await newContext(browser, { proxyServer });
-    context[PROXY_URL_KEY] = proxy;
-    const page = await newPage(context);
-    if (username) {
-        await page.authenticate({
-            username: decodeURIComponent(username),
-            password: decodeURIComponent(password)
-        });
+        if (!proxy) {
+            const context = await newContext(browser);
+            page = await newPage(context);
+        } else {
+            const { origin: proxyServer, username, password } = new URL(proxy);
+
+            const context = await newContext(browser, { proxyServer });
+            context[PROXY_URL_KEY] = proxy;
+            page = await newPage(context);
+
+            if (username) {
+                await page.authenticate({
+                    username: decodeURIComponent(username),
+                    password: decodeURIComponent(password)
+                });
+            }
+        }
     }
+
+    if (!('harWriter' in page) && request.body.headers.cookie === "har=start"){
+        const harWriter = new PuppeteerHar(page)
+        harWriter.start()
+        page.harWriter = harWriter
+    }
+
     return page;
+    
 };
 
 exports.performAction = async function performAction(request, action) {
