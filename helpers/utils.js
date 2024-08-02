@@ -5,6 +5,9 @@ const limitContext = require('./limit_context');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
+const puppeteerHar = null
+exports.puppeteerHar = puppeteerHar;
+
 async function findContextInBrowser(browser, contextId) {
     for (const context of browser.browserContexts()) {
         if (contextId === context.id) {
