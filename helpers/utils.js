@@ -169,14 +169,14 @@ exports.getBrowserPage = async function getBrowserPage(browser, request) {
         }
     }
 
-    if (!('harWriter' in page) && request.body.headers.cookie === "har=start"){
+    if (!('harWriter' in page) && request.body.headers.cookie.includes("har=start")){
         const harWriter = new PuppeteerHar(page)
         harWriter.start()
         page.harWriter = harWriter
     }
 
     return page;
-    
+
 };
 
 exports.performAction = async function performAction(request, action) {

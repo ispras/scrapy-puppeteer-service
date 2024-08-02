@@ -3,6 +3,9 @@ const utils = require('../helpers/utils');
 const router = express.Router();
 const PuppeteerHar = require('puppeteer-har');
 
+
+
+
 async function action(page, request) {
     const options = request.body.options;
     const harState = options.hasOwnProperty('har_state') ? options.har_state : null;
@@ -25,7 +28,7 @@ async function action(page, request) {
 
 
 
-//TODO Method that returns har of page downloads using https://www.npmjs.com/package/puppeteer-har
+//Method that returns har of page downloads using https://www.npmjs.com/package/puppeteer-har
 router.post('/', async function (req, res, next) {
 
     if (!req.body.options) {
