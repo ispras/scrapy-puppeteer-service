@@ -92,8 +92,13 @@ exports.getContents = async function getContents(page, waitFor) {
     };
 };
 
-async function newPage(context) {
+async function newPage(context, request) {
     const page = await context.newPage();
+    if (request.body.harRecording){
+        const harWriter = new PuppeteerHar(page)
+        harWriter.start()
+        page.harWriter = harWriter
+    }
 
     await page.setRequestInterception(true);
 
@@ -142,41 +147,27 @@ function getProxy(request) {
  */
 exports.getBrowserPage = async function getBrowserPage(browser, request) {
     const { contextId, pageId } = request.query;
-    let page;
-
     if (contextId) {
         const context = await findContextInBrowser(browser, contextId);
-        page = pageId ? await findPageInContext(context, pageId) : await newPage(context);
-    } else {
-        const proxy = getProxy(request);
-
-        if (!proxy) {
-            const context = await newContext(browser);
-            page = await newPage(context);
-        } else {
-            const { origin: proxyServer, username, password } = new URL(proxy);
-
-            const context = await newContext(browser, { proxyServer });
-            context[PROXY_URL_KEY] = proxy;
-            page = await newPage(context);
-
-            if (username) {
-                await page.authenticate({
-                    username: decodeURIComponent(username),
-                    password: decodeURIComponent(password)
-                });
-            }
-        }
+        return pageId ? findPageInContext(context, pageId) : newPage(context, request);
     }
-
-    if (!('harWriter' in page) && request.body.headers.cookie.includes("har=start")){
-        const harWriter = new PuppeteerHar(page)
-        harWriter.start()
-        page.harWriter = harWriter
+    const proxy = getProxy(request);
+    if (!proxy) {
+        const context = await newContext(browser);
+        return newPage(context, request);
     }
+    const { origin: proxyServer, username, password } = new URL(proxy);
 
+    const context = await newContext(browser, { proxyServer });
+    context[PROXY_URL_KEY] = proxy;
+    const page = await newPage(context, request);
+    if (username) {
+        await page.authenticate({
+            username: decodeURIComponent(username),
+            password: decodeURIComponent(password)
+        });
+    }
     return page;
-
 };
 
 exports.performAction = async function performAction(request, action) {
