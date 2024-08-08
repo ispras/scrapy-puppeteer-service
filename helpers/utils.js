@@ -2,6 +2,7 @@ const exceptions = require("./exceptions");
 const { proxyRequest } = require('puppeteer-proxy');
 const timeoutContext = require('./timeout_context');
 const limitContext = require('./limit_context');
+const PuppeteerHar = require('puppeteer-har');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
@@ -91,8 +92,13 @@ exports.getContents = async function getContents(page, waitFor) {
     };
 };
 
-async function newPage(context) {
+async function newPage(context, request) {
     const page = await context.newPage();
+    if (request.body.harRecording){
+        const harWriter = new PuppeteerHar(page)
+        harWriter.start()
+        page.harWriter = harWriter
+    }
 
     await page.setRequestInterception(true);
 
@@ -143,18 +149,18 @@ exports.getBrowserPage = async function getBrowserPage(browser, request) {
     const { contextId, pageId } = request.query;
     if (contextId) {
         const context = await findContextInBrowser(browser, contextId);
-        return pageId ? findPageInContext(context, pageId) : newPage(context);
+        return pageId ? findPageInContext(context, pageId) : newPage(context, request);
     }
     const proxy = getProxy(request);
     if (!proxy) {
         const context = await newContext(browser);
-        return newPage(context);
+        return newPage(context, request);
     }
     const { origin: proxyServer, username, password } = new URL(proxy);
 
     const context = await newContext(browser, { proxyServer });
     context[PROXY_URL_KEY] = proxy;
-    const page = await newPage(context);
+    const page = await newPage(context, request);
     if (username) {
         await page.authenticate({
             username: decodeURIComponent(username),

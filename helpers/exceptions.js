@@ -21,3 +21,11 @@ exports.TooManyContextsError = class TooManyContextsError extends Error {
         this.name = "TooManyContextsError";
     }
 }
+
+exports.NoHarWriterError = class NoHarWriterError extends Error {
+    constructor(message="There is no initialized Har Writer on the page to which the Har action was applied.", ...args) {
+        super(message, ...args);
+        this.message = message;
+        this.name = "NoHarWriterError";
+    }
+}
