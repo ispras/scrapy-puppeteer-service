@@ -21,6 +21,7 @@ const screenshotRouter = require('./routes/screenshot');
 const recaptchaSolverRouter = require('./routes/recaptcha_solver')
 const mhtmlRouter = require('./routes/mhtml');
 const harRouter = require('./routes/har');
+const formActionRouter = require('./routes/form_action');
 const closeContextRouter = require('./routes/close_context');
 
 const middlewares = require('./helpers/middlewares');
@@ -113,6 +114,7 @@ app.use('/screenshot', screenshotRouter);
 app.use('/recaptcha_solver', recaptchaSolverRouter);
 app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
+app.use('/form_action', formActionRouter);
 app.use('/close_context', closeContextRouter);
 
 app.use(middlewares.processExceptionMiddleware);
