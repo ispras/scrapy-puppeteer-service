@@ -1,4 +1,4 @@
-const {createPuppeteerMetrics} = require('./helpers/meter');  // Essential to put it first
+const { createPuppeteerMetrics } = require('./helpers/meter');  // Essential to put it first
 
 const express = require('express');
 const puppeteer = require('puppeteer-extra')
@@ -21,7 +21,7 @@ const screenshotRouter = require('./routes/screenshot');
 const recaptchaSolverRouter = require('./routes/recaptcha_solver')
 const mhtmlRouter = require('./routes/mhtml');
 const harRouter = require('./routes/har');
-const formActionRouter = require('./routes/form_action');
+const fillFormRouter = require('./routes/fill_form');
 const closeContextRouter = require('./routes/close_context');
 
 const middlewares = require('./helpers/middlewares');
@@ -79,7 +79,7 @@ async function setupBrowser() {
         const browser = await puppeteer.launch(
             {
                 headless: HEADLESS,
-                defaultViewport: {width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT},
+                defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT },
                 timeout: CONNECT_TIMEOUT
             });
         browser.on('disconnected', setupBrowser);
@@ -97,9 +97,9 @@ async function setupBrowser() {
 })();
 
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(middlewares.logHTTPMiddleware());
-app.use(bodyParser.raw({inflate: true, limit: '200kb', type: 'application/javascript'}));
+app.use(bodyParser.raw({ inflate: true, limit: '200kb', type: 'application/javascript' }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
@@ -114,7 +114,7 @@ app.use('/screenshot', screenshotRouter);
 app.use('/recaptcha_solver', recaptchaSolverRouter);
 app.use('/mhtml', mhtmlRouter);
 app.use('/har', harRouter);
-app.use('/form_action', formActionRouter);
+app.use('/fill_form', fillFormRouter);
 app.use('/close_context', closeContextRouter);
 
 app.use(middlewares.processExceptionMiddleware);
