@@ -7,7 +7,7 @@ async function action(page, request) {
     const submitButton = request.body.submitButton || null;
 
     for (const [selector, params] of Object.entries(inputMapping)) {
-        const value = params.value || "no value was provided";
+        const value = params.value || "";
         const delay = params.delay || 0;
         await page.type(selector, value, { delay });
     }
