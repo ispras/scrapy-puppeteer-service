@@ -275,5 +275,5 @@ Once you don't need the browser tab you need to explicitly close it (e.g. at the
 - [x] proxy support for puppeteer
 - [x] support of extra headers
 - [x] error handling for requests
-- [ ] har support
+- [x] har support
 - [x] scaling to several docker containers
