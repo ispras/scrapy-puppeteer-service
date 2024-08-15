@@ -4,10 +4,10 @@ const router = express.Router();
 
 async function action(page, request) {
     const inputMapping = request.body.inputMapping;
-    const submitButton = request.body.submitButton || null;
+    const submitButton = request.body.submitButton;
 
     for (const [selector, params] of Object.entries(inputMapping)) {
-        const value = params.value || "";
+        const value = params.value;
         const delay = params.delay || 0;
         await page.type(selector, value, { delay });
     }
