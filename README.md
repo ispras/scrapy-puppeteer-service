@@ -153,6 +153,31 @@ Example request body:
  }
 ```
 
+### **/har**
+This POST method allows to get the HAR file
+
+### **/form_action**
+This POST method allows filling out and submitting forms on a webpage by interacting with input elements identified by CSS selectors. It also allows clicking a submit button if specified.
+
+Example request body:
+
+```json5
+{
+    "inputMapping": {  // A dictionary where each key is a CSS selector, and each value is another dictionary containing details about the input for that element.
+        "input[name='username']": {
+            "value": "myUsername", 
+            "delay": 100 
+        },
+        "input[name='password']": {
+            "value": "myPassword",
+            "delay": 100
+        }
+    },
+    "submitButton": "button[type='submit']" //<string> (optional) The CSS selector for the form's submit button. If provided, the button will be clicked after filling in the form.
+}
+```
+
+
 ### **/action**
 
 Body of this POST request should be a js code that declares function action with at least page
@@ -250,5 +275,5 @@ Once you don't need the browser tab you need to explicitly close it (e.g. at the
 - [x] proxy support for puppeteer
 - [x] support of extra headers
 - [x] error handling for requests
-- [ ] har support
+- [x] har support
 - [x] scaling to several docker containers
