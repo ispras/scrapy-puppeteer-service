@@ -13,6 +13,6 @@ exports.initContextCounter = function (maxContextCounter) {
     if (!isNaN(maxContextCounter)) {
         exports.incContextCounter = () => { contextCounter++ };
         exports.decContextCounter = () => { contextCounter-- };
-        exports.canCreateContext = () => { return contextCounter < maxContextCounter }
+        exports.canCreateContext = () => { return contextCounter < maxContextCounter };
     }
 }

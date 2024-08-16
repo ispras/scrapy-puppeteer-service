@@ -1,8 +1,10 @@
 const {BrowserContext} = require('puppeteer');
+
 const loggers = require('./loggers');
+const {closeContexts} = require('./utils');
 
 /**
- * ContextId -> Timeout timer' IDs
+ * ContextId -> Timeout timer's IDs
  *
  * @type {{string: number}}
  */
@@ -12,18 +14,19 @@ let contextTimeout;
 /**
  * Set timeout for context.
  *
- * @param {BrowserContext} context
- */
+ * @param {BrowserContext} context Browser context.
+ **/
 function setContextTimeout(context) {
     const logger = loggers.getLogger();
 
     contextTimeoutIds[context.id] = setTimeout(
         async () => {
             logger.warn(`Closing context ${context.id} due to timeout\n`);
-            await context.close();
+            await closeContexts(context.browser(), [context.id]);
             delete contextTimeoutIds[context.id];
         },
-        contextTimeout);
+        contextTimeout,
+    );
 }
 exports.setContextTimeout = setContextTimeout;
 
@@ -41,7 +44,7 @@ exports.clearContextTimeout = clearContextTimeout;
 /**
  * Update timeout for context.
  *
- * @param {BrowserContext} context
+ * @param {BrowserContext} context Context.
  */
 exports.updateContextTimeout = function updateContextTimeout (context) {
     clearContextTimeout(context);
@@ -51,7 +54,7 @@ exports.updateContextTimeout = function updateContextTimeout (context) {
 /**
  * Init service that timeouts contexts after CONTEXT_TIMEOUT ms.
  *
- * @param {number} timeout
+ * @param {number} timeout Context timeout for the service.
  */
 exports.initTimeoutContext = function initTimeoutContext (timeout) {
     contextTimeout = timeout;

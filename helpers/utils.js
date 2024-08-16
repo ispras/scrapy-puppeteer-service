@@ -1,8 +1,10 @@
-const exceptions = require("./exceptions");
+const {Browser} = require('puppeteer');
 const { proxyRequest } = require('puppeteer-proxy');
-const timeoutContext = require('./timeout_context');
-const limitContext = require('./limit_context');
 const PuppeteerHar = require('puppeteer-har');
+
+const exceptions = require("./exceptions");
+const limitContext = require('./limit_context');
+const timeoutContext = require('./timeout_context');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
@@ -24,6 +26,12 @@ async function findPageInContext(context, pageId) {
     throw new exceptions.PageNotFoundError();
 }
 
+/**
+ * Close contexts in browser.
+ *
+ * @param {Browser} browser Browser with contexts to close.
+ * @param {[string]} contextIds Context ids to close.
+ **/
 exports.closeContexts = async function closeContexts(browser, contextIds) {
     // TODO shared locks on contexts and exclusive on pages?
     const closePromises = [];
@@ -71,6 +79,7 @@ async function wait(page, waitFor) {
 
 /***
  * This function returns `pageId` and `contextId` of corresponding page.
+ *
  * @param page
  * @returns Promise
  */
@@ -94,10 +103,11 @@ exports.getContents = async function getContents(page, waitFor) {
 
 async function newPage(context, request) {
     const page = await context.newPage();
+
     if (request.body.harRecording){
-        const harWriter = new PuppeteerHar(page)
-        harWriter.start()
-        page.harWriter = harWriter
+        const harWriter = new PuppeteerHar(page);
+        await harWriter.start();
+        page.harWriter = harWriter;
     }
 
     await page.setRequestInterception(true);
@@ -125,7 +135,7 @@ async function newContext(browser, options = {}) {
         const context = await browser.createIncognitoBrowserContext(options);
         limitContext.incContextCounter();
         timeoutContext.setContextTimeout(context);
-        return context
+        return context;
     } catch (err) {
         limitContext.decContextCounter();
         throw err;
@@ -141,6 +151,7 @@ function getProxy(request) {
 /***
  * This function returns a page from browser context or create new page or even context if pageId or contextId are
  * none. If no context or now page found throw an error.
+ *
  * @param browser
  * @param request
  * @returns {Promise<Page>}
