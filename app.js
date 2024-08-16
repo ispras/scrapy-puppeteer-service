@@ -96,6 +96,10 @@ async function setupBrowser() {
     app.set('lock', new AsyncLock());
 })();
 
+setInterval(() => {
+    limitContext.updateContextTimeout(app.get('browser').browserContexts().length);
+}, 60000);  // Every 1 minute
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(middlewares.logHTTPMiddleware());

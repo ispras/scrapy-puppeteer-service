@@ -33,7 +33,7 @@ exports.setContextTimeout = setContextTimeout;
 /**
  * The function clears context's timeout timer.
  *
- * @param {BrowserContext} context context to be cleared
+ * @param {BrowserContext} context Context to be cleared
  */
 function clearContextTimeout(context) {
     clearTimeout(contextTimeoutIds[context.id]);
