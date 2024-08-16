@@ -20,12 +20,12 @@
     "fingerprint-injector": "^2.1.30",
     "morgan": "~1.10.0",
     "npm-run-all": "^4.1.5",
-    "puppeteer": "^20.1.2",
+    "puppeteer": "^22.0.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-recaptcha": "^3.6.8",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "puppeteer-har": "^1.0.0",
     "puppeteer-proxy": "^2.1.2",
-    "puppeteer-har": "1.1.2",
     "winston": "^3.11.0",
     "winston-logstash": "^1.2.1"
   }

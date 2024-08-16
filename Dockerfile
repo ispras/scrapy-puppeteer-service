@@ -33,11 +33,6 @@ ENV RESOLUTION=1920x1080
 # Expose VNC port
 EXPOSE 5901
 
-# Copy a script to start the VNC server
-# COPY start-vnc.sh start-vnc.sh
-# RUN chmod +x start-vnc.sh
-# RUN bash ./start-vnc.sh
-
 RUN mkdir -p /app
 COPY . /app/
 WORKDIR /app
@@ -55,9 +50,9 @@ USER pptruser
 #RUN expect -c 'spawn ./start-vnc.sh; expect "Password: "; send "password\r"; expect "Verify: "; send "password\r"; interact'
 
 # Speeding the `docker build` command up
-RUN yarn add puppeteer --ignore-script
+RUN #yarn add $(cat yarn.lock | grep puppeteer@ | head -c -2) --ignore-script
 RUN yarn install
-RUN yarn exec node ./node_modules/puppeteer/install.mjs
+RUN #yarn exec node ./node_modules/puppeteer/install.mjs
 
 
 RUN printf "password\npassword\nn" | vncpasswd
