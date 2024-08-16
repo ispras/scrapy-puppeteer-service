@@ -97,8 +97,8 @@ async function setupBrowser() {
 })();
 
 setInterval(() => {
-    limitContext.updateContextTimeout(app.get('browser').browserContexts().length);
-}, 60000);  // Every 1 minute
+    limitContext.updateContextTimeout(app.get('browser').browserContexts().length - 1);
+}, 60000);  // Synchronize number of contexts every 1 minute
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
