@@ -76,15 +76,21 @@ async function setupBrowser() {
 
     try {
         //TODO add more params for puppeteer launch
+        console.log("Trying to start browser");
         const browser = await puppeteer.launch(
             {
                 headless: HEADLESS,
                 defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT },
                 timeout: CONNECT_TIMEOUT,
+                args: [
+                    "--no-sandbox",
+                ]
             });
+        console.log("Started the browser");
         browser.on('disconnected', setupBrowser);
         app.set('browser', browser);
     } catch (error) {
+        console.log(error);
         process.exit(1);
     }
 
