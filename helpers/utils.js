@@ -122,7 +122,7 @@ async function newContext(browser, options = {}) {
     }
 
     try {
-        const context = await browser.createIncognitoBrowserContext(options);
+        const context = await browser.createBrowserContext(options);
         limitContext.incContextCounter();
         timeoutContext.setContextTimeout(context);
         return context

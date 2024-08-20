@@ -18,6 +18,9 @@ RUN mkdir /root/.vnc \
     && chmod 600 /root/.vnc/passwd
 
 RUN touch /root/.Xauthority
+RUN Xvfb :1 -screen 0 1024x768x24 &
+
+ENV DISPLAY=:1
 
 ENV USER=root
 
