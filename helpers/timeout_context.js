@@ -27,6 +27,10 @@ function setContextTimeout(context) {
                 logger.warn(`Context ${context.id} is closed due to timeout\n`);
             } catch (e) {
                 logger.warn(`Context ${context.id} has fallen off\n`);
+                logger.error({
+                    message: e,
+                    contextId: context.id,
+                });
             } finally {
                 delete contextTimeoutIds[context.id];
             }
