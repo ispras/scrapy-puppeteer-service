@@ -21,7 +21,6 @@ function setContextTimeout(context) {
 
     contextTimeoutIds[context.id] = setTimeout(
         async () => {
-            console.log(context);
             try {
                 await context.close();
                 limitContext.decContextCounter();
