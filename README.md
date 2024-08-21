@@ -26,6 +26,14 @@ To run example which shows how to deploy several instances of service with load 
 $ docker-compose up -d
 ```
 
+To run headfull puppeteer in container provide `HEADLESS=false` environment variable to the container.
+In this case a VNC server at `localhost:5901` with password `password` is started.
+You may change the password providing `VNC_SERVER` environment variable.
+
+```shell script
+$ docker run -d -p 3000:3000 -p 5901:5901 -e HEADLESS=false -e VNC_PASSWORD=puppeteer --name scrapy-puppeteer-service --cap-add SYS_ADMIN scrapy-puppeteer-service
+```
+
 ## API
 
 Here is the list of implemented methods that could be used to connect to puppeteer.
@@ -74,9 +82,10 @@ This POST method allows to goto a page with a specific url in puppeteer.
 
 Params: 
 
-url - the url which puppeteer should navigate to.      
-navigationOptions - [possible options to use for request.](https://pptr.dev/api/puppeteer.page.goto#remarks)      
-waitOptions - [wait for selector](https://pptr.dev/api/puppeteer.page.waitforselector), [xpath](https://pptr.dev/api/puppeteer.page.waitforxpath), or timeout after navigation completes.
+url - the url which puppeteer should navigate to. \
+navigationOptions - [possible options to use for request.](https://pptr.dev/api/puppeteer.page.goto#remarks) \
+waitOptions - [wait for selector](https://pptr.dev/api/puppeteer.page.waitforselector), [xpath](https://pptr.dev/api/puppeteer.page.waitforxpath), or timeout after navigation completes. \
+harRecording - whether to start writing HAR or not.
 
 Example request body
 ```json5
@@ -98,7 +107,8 @@ Example request body
         "options": { // <object> Options to wait for elements (see https://pptr.dev/api/puppeteer.waitforselectoroptions)
             "timeout": 10000
         } 
-    }
+    },
+    "harRecording": true,
 }
 ```
 
