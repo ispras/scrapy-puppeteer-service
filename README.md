@@ -18,7 +18,7 @@ To start service run the docker container.
 Since the Dockerfile adds a pptr user as a non-privileged user, it may not have all the necessary privileges.
 So you should use `docker run --cap-add=SYS_ADMIN` option.
 ```shell script
-$ docker run -d -p 3000:3000 --name scrapy-puppeter-service --cap-add SYS_ADMIN isprascrawlers/scrapy-puppeteer-service 
+$ docker run -d -p 3000:3000 --name scrapy-puppeteer-service --cap-add SYS_ADMIN isprascrawlers/scrapy-puppeteer-service 
 ```
 
 To run example which shows how to deploy several instances of service with load balancer use this command.
@@ -32,13 +32,13 @@ Here is the list of implemented methods that could be used to connect to puppete
 For All requests puppeteer browser creates new incognito browser context and new page in it.
 If your want to reuse your browser context simple send context_id in your query. 
 All request return their context ids in response. 
-Also you could reuse your browser page and more actions with it.
+Also, you could reuse your browser page and more actions with it.
 In order to do so you should send in your request pageId that is returned in your previous request,
 that would make service reuse current page and return again its pageId. 
 If you want to close the page you are working with you should send in query param "closePage" with non-empty value.
 If you want your requests on page make through proxy, just add to normal request "proxy" param. 
 Proxy username and password params are optional.
-Also you can add extra http headers to each request that is made on page.
+Also, you can add extra http headers to each request that is made on page.
 ```json5
 {
   //request params  
@@ -205,7 +205,7 @@ async function action(page, request) {
 
 This POST method returns screenshots of current page more.  
 Description of options you can see on [puppeteer GitHub](https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions).
-The path options is omitted in options. Also the only possibly encoding is `base64`.
+The path options is omitted in options. Also, the only possibly encoding is `base64`.
                                                             
 Example request body:
 ```json5

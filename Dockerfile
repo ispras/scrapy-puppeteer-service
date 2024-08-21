@@ -1,4 +1,8 @@
-FROM node:20.10.0
+FROM node:18
+
+ENV USER=root
+ENV DISPLAY=:1
+ENV RESOLUTION=1080x720
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
@@ -12,24 +16,6 @@ RUN apt-get update \
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Setup VNC server
-RUN mkdir /root/.vnc \
-    && echo "password" | vncpasswd -f > /root/.vnc/passwd \
-    && chmod 600 /root/.vnc/passwd
-
-RUN touch /root/.Xauthority
-RUN Xvfb :1 -screen 0 1024x768x24 &
-
-ENV DISPLAY=:1
-
-ENV USER=root
-
-# Set display resolution (change as needed)
-ENV RESOLUTION=1920x1080
-
-# Expose VNC port
-EXPOSE 5901
-
 RUN mkdir -p /app
 COPY . /app/
 WORKDIR /app
@@ -38,16 +24,17 @@ ENV NODE_PATH=/app/node_modules
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
     && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /app
-RUN chmod +x start-vnc.sh \
-    && chmod +x wrapper.sh
+    && chown -R pptruser:pptruser /app \
+    && chmod +x start_vnc.sh \
+    && chmod +x start_container.sh
 
 USER pptruser
 
 RUN yarn install
 
-ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
-RUN printf "password\npassword\nn" | vncpasswd
-
+# puppeteer-service
 EXPOSE 3000
-CMD ./wrapper.sh
+# VNC-server
+EXPOSE 5901
+
+CMD ./start_container.sh
