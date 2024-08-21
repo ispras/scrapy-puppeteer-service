@@ -215,7 +215,7 @@ async function action(page, request) {
 
 This POST method returns screenshots of current page more.  
 Description of options you can see on [puppeteer GitHub](https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions).
-The path options is omitted in options. Also, the only possibly encoding is `base64`.
+The path options is omitted in options. Also, the only possible encoding is `base64`.
                                                             
 Example request body:
 ```json5

@@ -88,7 +88,6 @@ async function setupBrowser() {
         browser.on('disconnected', setupBrowser);
         app.set('browser', browser);
     } catch (error) {
-        console.log(error);
         process.exit(1);
     }
 
