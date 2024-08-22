@@ -1,6 +1,6 @@
 {
   "name": "scrapy-puppeteer-service",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -24,8 +24,8 @@
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-recaptcha": "^3.6.8",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "puppeteer-har": "^1.0.0",
     "puppeteer-proxy": "^2.1.2",
+    "puppeteer-har": "^1.1.2",
     "winston": "^3.11.0",
     "winston-logstash": "^1.2.1"
   }
