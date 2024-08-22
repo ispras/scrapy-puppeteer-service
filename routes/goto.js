@@ -24,7 +24,8 @@ async function action(page, request) {
 //         "selector": <string> Wait for element by selector (see https://pptr.dev/api/puppeteer.page.waitforselector)
 //         "xpath": <string> Wait for element by xpath (see https://pptr.dev/api/puppeteer.page.waitforxpath)
 //         "options": <object> Options to wait for elements (see https://pptr.dev/api/puppeteer.waitforselectoroptions)
-//     }
+//     },
+//     "harRecording": true,
 // }
 //
 router.post('/', async function (req, res, next) {
