@@ -44,10 +44,6 @@ const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() 
 const MAX_CONCURRENT_CONTEXTS = process.env.MAX_CONCURRENT_CONTEXTS === "Infinity" ? Infinity : parseInt(process.env.MAX_CONCURRENT_CONTEXTS);
 const CONTEXT_TIMEOUT = parseInt(process.env.CONTEXT_TIMEOUT) || 600000;  // 10 minutes
 
-timeoutContext.initTimeoutContext(CONTEXT_TIMEOUT);
-limitContext.initContextCounter(MAX_CONCURRENT_CONTEXTS);
-loggers.initLogger(LOG_LEVEL, LOG_FILE, LOGSTASH_HOST, LOGSTASH_PORT);
-
 async function setupBrowser() {
     try {
         if (TOKEN_2CAPTCHA) {  // If token is given then RecaptchaPlugin is activated
@@ -88,13 +84,19 @@ async function setupBrowser() {
         process.exit(1);
     }
 
-    createPuppeteerMetrics(app);
+    createPuppeteerMetrics(app);  // TODO: to check if we can move it to services initialization part
 }
 
+// App initialization
 (async () => {
     await setupBrowser();
     app.set('lock', new AsyncLock());
 })();
+
+// Services initialization
+timeoutContext.initTimeoutContext(CONTEXT_TIMEOUT);
+limitContext.initContextCounter(app, MAX_CONCURRENT_CONTEXTS);
+loggers.initLogger(LOG_LEVEL, LOG_FILE, LOGSTASH_HOST, LOGSTASH_PORT);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
