@@ -12,8 +12,8 @@ const router = express.Router();
  *      return {
  *          context_id: page.browserContext().id,
  *          page_id: page.target()._targetId,
-            html: await page.content(),
-            cookies: await page.cookies()
+ *          html: await page.content(),
+ *          cookies: await page.cookies()
  *      };
  * };
  */

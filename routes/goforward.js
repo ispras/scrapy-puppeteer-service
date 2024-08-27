@@ -1,15 +1,11 @@
 const express = require('express');
+
+const {goForward} = require('../actions/goforward');
 const utils = require('../helpers/utils');
+
 const router = express.Router();
 
-
-async function action(page, request) {
-    await page.goForward(request.body.navigationOptions);
-    return await utils.getContents(page, request.body.waitOptions);
-}
-
 router.post('/', async function (req, res, next) {
-
     if (!req.query.contextId || !req.query.pageId) {
         res.status(400);
         res.send("No page in request");
@@ -18,7 +14,7 @@ router.post('/', async function (req, res, next) {
     }
 
     try {
-        let response = await utils.performAction(req, action);
+        let response = await utils.performAction(req, goForward);
         res.header('scrapy-puppeteer-service-context-id', response.contextId);
         res.send(response)
     } catch (e) {

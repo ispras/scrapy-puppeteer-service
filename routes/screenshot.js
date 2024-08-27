@@ -1,24 +1,13 @@
 const express = require('express');
+
 const utils = require('../helpers/utils');
+const {screenshot} = require('../actions/screenshot');
+
 const router = express.Router();
 
-
-async function action(page, request) {
-    delete request.body.options.path; // no path for saving images
-    request.body.options.encoding = "base64"; // return in base64 
-    let screenshot = await page.screenshot(request.body.options);
-    return {
-        screenshot: screenshot
-    };
-}
-
-// Method that returns screenshots of pages
-// more description of options you can see on GitHub:
-// https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md#pagescreenshotoptions
 router.post('/', async function (req, res, next) {
-
     try {
-        let response = await utils.performAction(req, action);
+        let response = await utils.performAction(req, screenshot);
         res.header('scrapy-puppeteer-service-context-id', response.contextId);
         res.send(response);
     } catch (e) {
