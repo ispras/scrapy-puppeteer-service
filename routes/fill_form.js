@@ -2,15 +2,13 @@ const express = require('express');
 
 const {fillForm} = require('../actions/fill_form');
 const utils = require('../helpers/utils');
+const exceptions = require('../helpers/exceptions');
 
 const router = express.Router();
 
 router.post('/', async function (req, res, next) {
     if (!req.body.inputMapping) {
-        res.status(400);
-        res.send("No inputMapping provided in fill_form request");
-        next();
-        return;
+        throw new exceptions.IncorrectArgumentError("No inputMapping provided in fill_form request");
     }
 
     try {

@@ -2,16 +2,13 @@ const express = require('express');
 
 const {click} = require('../actions/click');
 const utils = require('../helpers/utils');
+const exceptions = require('../helpers/exceptions');
+
 const router = express.Router();
 
 router.post('/', async function (req, res, next) {
-
-    //TODO better request error handling
     if (!("selector" in req.body)) {
-        res.status("400");
-        res.send("No selector to click in request");
-        next();
-        return;
+        throw new exceptions.IncorrectArgumentError("No selector to click in request");
     }
 
     try {

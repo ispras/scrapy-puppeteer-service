@@ -1,5 +1,8 @@
 const express = require('express');
+
 const utils = require('../helpers/utils');
+const exceptions = require('../helpers/exceptions');
+
 const router = express.Router();
 
 /**
@@ -18,23 +21,22 @@ const router = express.Router();
  * };
  */
 router.post('/', async function (req, res, next) {
-
-    //TODO better request error handling
-    // if (!("action" in req.body)) {
-    //     res.status("400");
-    //     res.send("No action in request")
-    // }
-
     try {
-        eval(req.body.toString());
-
-        //check action function exists
-        if (!(typeof action === "function" && action.length >= 1)) {
-            res.status("400");
-            res.send("Valid action function: \"async function action(page, request) " +
+        if (!(/^\s*(async)?\s*function\s*action\s*\(\s*page\s*(,\s*request)?\)\s*{(.|\s)*}$/.test(req.body))) {
+            throw new exceptions.IncorrectArgumentError("Invalid action function.\n" +
+                "Valid action function: \"async function action(page, request) " +
                 "{ ... some actions with request and page in puppeteer " +
                 "syntax};\"");
-            throw new Error("Invalid action function");
+        }
+
+        eval(req.body.toString());
+
+        // check action function existence
+        if (!(typeof action === "function" && action.length >= 1)) {
+            throw new exceptions.IncorrectArgumentError("Invalid action function.\n" +
+                "Valid action function: \"async function action(page, request) " +
+                "{ ... some actions with request and page in puppeteer " +
+                "syntax};\"");
         }
 
         let response = await utils.performAction(req, async (page, request) => {

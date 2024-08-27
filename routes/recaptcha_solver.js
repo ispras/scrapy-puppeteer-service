@@ -3,13 +3,11 @@ const router = express.Router()
 
 const {recaptchaSolver} = require('../actions/recaptcha_solver');
 const utils = require('../helpers/utils')
+const exceptions = require('../helpers/exceptions');
 
 router.post('/', async function (req, res, next) {
     if (!req.query.contextId || !req.query.pageId) {
-        res.status(400);
-        res.send("No page in request");
-        next();
-        return;
+        throw new exceptions.IncorrectArgumentError("No page in request");
     }
 
     if (!process.env.TOKEN_2CAPTCHA) {
@@ -20,10 +18,7 @@ router.post('/', async function (req, res, next) {
     }
 
     if (!("solve_recaptcha" in req.body)) {
-        res.status("400");
-        res.send("No solve_recaptcha parameter in request");
-        next();
-        return;
+        throw new exceptions.IncorrectArgumentError("No solve_recaptcha parameter in request");
     }
 
     try {

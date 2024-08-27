@@ -2,15 +2,13 @@ const express = require('express');
 
 const {goto} = require('../actions/goto');
 const utils = require('../helpers/utils');
+const exceptions = require('../helpers/exceptions');
 
 const router = express.Router();
 
 router.post('/', async function (req, res, next) {
     if (!req.body.url) {
-        res.status(400);
-        res.send("No URL provided in goto request");
-        next();
-        return;
+        throw new exceptions.IncorrectArgumentError("No URL provided in goto request");
     }
 
     try {
