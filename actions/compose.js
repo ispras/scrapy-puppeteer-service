@@ -1,5 +1,3 @@
-const utils = require("../helpers/utils");
-
 endpoint2action = {
     action: require("./action").action,
     click: require("./click").click,
@@ -14,12 +12,26 @@ endpoint2action = {
     scroll: require("./scroll").scroll,
 }
 
-exports.compose = async function compose(page, request) {
-    const originalBody = request.body;  // TODO: to test!
+async function compose(page, request) {
+    const originalClosePage = request.query.closePage;
+    const originalBody = structuredClone(request.body);
+
+    request.query.closePage = false;
+    delete request.body["actions"];
+
     let response;
-    for (const action of originalBody) {
-        request.body = action["body"];
-        response = await utils.performAction(request, endpoint2action[action.endpoint]);
+    try {
+        for (const action of originalBody["actions"]) {
+            Object.assign(request.body, action["body"]);
+            response = await endpoint2action[action["endpoint"]](page, request);
+        }
+    } catch (e) {
+        throw e;
+    } finally {
+        request.query.closePage = originalClosePage;
+        request.body = originalBody;
     }
+
     return response;
 }
+exports.compose = compose;

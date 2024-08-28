@@ -16,7 +16,7 @@ const exceptions = require('../helpers/exceptions');
  * };
  */
 exports.action = async function action(page, request) {
-    if (!(/^\s*(async)?\s*function\s*action\s*\(\s*page\s*(,\s*request)?\)\s*{(.|\s)*}$/.test(request.body))) {
+    if (!(/^\s*(async)?\s*function\s*action\s*\(\s*page\s*(,\s*request)?\)\s*{(.|\s)*}\s*$/.test(request.body))) {
         throw new exceptions.IncorrectArgumentError("Invalid action function.\n" +
             "Valid action function: \"async function action(page, request) " +
             "{ ... some actions with request and page in puppeteer " +

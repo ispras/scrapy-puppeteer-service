@@ -7,8 +7,8 @@ const utils = require("../helpers/utils");
 const router = express.Router();
 
 router.post('/', async function (req, res, next){
-    if (!(req.body instanceof Array)) {
-        throw new exceptions.IncorrectArgumentError("Body of compose method should be an Array");
+    if (!(req.body instanceof Object)) {
+        throw new exceptions.IncorrectArgumentError("Body of compose method should be an Object");
     }
 
     try {

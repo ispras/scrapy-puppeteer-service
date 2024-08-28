@@ -89,6 +89,7 @@ async function getIds(page) {
         pageId: page.target()._targetId,
     }
 }
+exports.getIds = getIds;
 
 exports.getContents = async function getContents(page, waitFor) {
     if (waitFor) {
