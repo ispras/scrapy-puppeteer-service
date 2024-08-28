@@ -1,4 +1,5 @@
 const exceptions = require('../helpers/exceptions');
+const utils = require('../helpers/utils');  // For usage inside user's action(page, request) function
 
 /**
  * Content-Type: application/javascript
