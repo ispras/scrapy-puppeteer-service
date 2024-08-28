@@ -149,6 +149,46 @@ Example request body:
 }
 ```
 
+### **/click**
+
+This POST method allows to combine several puppeteer actions into one.
+
+Example request body:
+```json5
+{
+    "actions": [
+        {
+            "endpoint": "goto",
+            "body": {
+                "url": "<URL>",
+                "harRecording": false,
+            },
+        },
+        {
+          "endpoint": "click",
+          "body": {
+              "selector": "<SELECTOR>",
+          },
+        },
+        {
+          "endpoint": "click",
+          "body": {
+              "selector": "<SELECTOR>",
+          },
+        },
+        {
+          "endpoint": "screenshot",
+          "body": {
+              "options": {
+                  "full_page": true,
+                  "type": "jpeg",
+              },
+        },
+      }
+    ],
+}
+```
+
 ### **/scroll**
 
 This POST method allows to scroll page to the first element that is matched by selector and returns page result.
