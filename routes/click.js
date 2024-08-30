@@ -34,7 +34,7 @@ router.post('/', async function (req, res, next) {
 
     //TODO better request error handling
     if (!("selector" in req.body)) {
-        res.status("400");
+        res.status(400);
         res.send("No selector to click in request");
         next();
         return;

@@ -21,7 +21,7 @@ router.post('/', async function (req, res, next) {
 
     //TODO better request error handling
     // if (!("action" in req.body)) {
-    //     res.status("400");
+    //     res.status(400);
     //     res.send("No action in request")
     // }
 
@@ -30,7 +30,7 @@ router.post('/', async function (req, res, next) {
 
         //check action function exists
         if (!(typeof action === "function" && action.length >= 1)) {
-            res.status("400");
+            res.status(400);
             res.send("Valid action function: \"async function action(page, request) " +
                 "{ ... some actions with request and page in puppeteer " +
                 "syntax};\"");
