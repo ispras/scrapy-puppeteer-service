@@ -25,8 +25,6 @@ async function compose(page, request) {
             Object.assign(request.body, action["body"]);
             response = await endpoint2action[action["endpoint"]](page, request);
         }
-    } catch (e) {
-        throw e;
     } finally {
         request.query.closePage = originalClosePage;
         request.body = originalBody;

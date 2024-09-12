@@ -17,13 +17,6 @@ const utils = require('../helpers/utils');  // For usage inside user's action(pa
  * };
  */
 exports.action = async function action(page, request) {
-    if (!(/^\s*(async)?\s*function\s*action\s*\(\s*page\s*(,\s*request)?\)\s*{(.|\s)*}\s*$/.test(request.body))) {
-        throw new exceptions.IncorrectArgumentError("Invalid action function.\n" +
-            "Valid action function: \"async function action(page, request) " +
-            "{ ... some actions with request and page in puppeteer " +
-            "syntax};\"");
-    }
-
     eval(request.body.toString());
 
     // check action function existence
