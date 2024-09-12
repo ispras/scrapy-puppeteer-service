@@ -235,7 +235,7 @@ parameter. The content type of request should be:
 ```http request
  Content-Type: application/javascript
 ```
- 
+
 Simple example request body of goto:
 ```js
 async function action(page, request) {

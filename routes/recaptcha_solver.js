@@ -11,7 +11,7 @@ router.post('/', async function (req, res, next) {
     }
 
     if (!process.env.TOKEN_2CAPTCHA) {
-        res.status("501");
+        res.status(501);
         res.send("TOKEN_2CAPTCHA is not provided!");
         next();
         return;
