@@ -22,7 +22,7 @@ async function compose(page, request) {
     let response;
     try {
         for (const action of originalBody["actions"]) {
-            Object.assign(request.body, action["body"]);
+            request.body = action["body"];
             response = await endpoint2action[action["endpoint"]](page, request);
         }
     } finally {

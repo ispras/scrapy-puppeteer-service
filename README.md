@@ -149,9 +149,10 @@ Example request body:
 }
 ```
 
-### **/click**
+### **/compose**
 
 This POST method allows to combine several puppeteer actions into one.
+Note that the method does not expect nested composite actions inside its body.
 
 Example request body:
 ```json5
@@ -175,6 +176,10 @@ Example request body:
           "body": {
               "selector": "<SELECTOR>",
           },
+        },
+        {
+          "endpoint": "scroll",
+          "body": {},
         },
         {
           "endpoint": "screenshot",
