@@ -160,7 +160,7 @@ Example request body:
     "waitOptions": {  // selector, xpath or timeout, same as in the goto method
       "timeout": 5000, //default timeout is 1000ms
     }
- }
+}
 ```
 
 ### **/har**
@@ -208,7 +208,7 @@ async function action(page, request) {
     };
     await page.close();
     return response;
- }
+}
 ```
 
 ### **/screenshot**
@@ -225,7 +225,7 @@ Example request body:
         "quality": 100,
         "fullPage" : true 
      }
- }
+}
 ```
 
 ### **/recaptcha_solver**
