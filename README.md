@@ -279,6 +279,12 @@ You may expect the service to fit 60 open contexts into 1 gigabyte of RAM.
 
 Once you don't need the browser tab you need to explicitly close it (e.g. at the end of the parse method).
 
+## VNC and NoVNC
+
+In case when `HEADLES=false` environment variable is explicitly set,
+you may use VNC-server on 5901 port or view NoVNC in browser at localhost:5900.
+These provide the ability to check container's process.
+
 ## TODO
 
 - [x] skeleton that could handle goto, click, scroll, and actions.
