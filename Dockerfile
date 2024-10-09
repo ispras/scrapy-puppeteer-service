@@ -8,12 +8,13 @@ ENV RESOLUTION=1080x720
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
 # installs, work.
 RUN apt-get update \
-    && apt-get install -y wget gnupg tightvncserver xfce4 xfce4-goodies xfonts-base dbus-x11 \
+    && apt-get install -y wget gnupg tightvncserver xfce4 xfce4-goodies xfonts-base dbus-x11 novnc \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
     && sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
     && apt-get update \
     && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 \
       --no-install-recommends \
+    && ln /usr/share/novnc/vnc.html /usr/share/novnc/index.html \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /app
@@ -36,5 +37,7 @@ RUN yarn install
 EXPOSE 3000
 # VNC-server
 EXPOSE 5901
+# NoVNC
+EXPOSE 5900
 
 CMD ./start_container.sh

@@ -205,7 +205,7 @@ Example request body:
     "waitOptions": {  // selector, xpath or timeout, same as in the goto method
       "timeout": 5000, //default timeout is 1000ms
     }
- }
+}
 ```
 
 ### **/har**
@@ -253,7 +253,7 @@ async function action(page, request) {
     };
     await page.close();
     return response;
- }
+}
 ```
 
 ### **/screenshot**
@@ -270,7 +270,7 @@ Example request body:
         "quality": 100,
         "fullPage" : true 
      }
- }
+}
 ```
 
 ### **/recaptcha_solver**
@@ -323,6 +323,12 @@ Here we list them all with their purpose.
 You may expect the service to fit 60 open contexts into 1 gigabyte of RAM.
 
 Once you don't need the browser tab you need to explicitly close it (e.g. at the end of the parse method).
+
+## VNC and NoVNC
+
+In case when `HEADLES=false` environment variable is explicitly set,
+you may use VNC-server on 5901 port or view NoVNC in browser at localhost:5900.
+These provide the ability to check container's process.
 
 ## TODO
 
