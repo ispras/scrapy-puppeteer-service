@@ -1,3 +1,11 @@
+exports.IncorrectArgumentError = class IncorrectArgumentError extends Error {
+    constructor(message="Passed incorrect argument", ...args) {
+        super(message, ...args);
+        this.message = message;
+        this.name = "IncorrectArgumentError";
+    }
+}
+
 exports.PageNotFoundError = class PageNotFoundError extends Error {
     constructor(message="Page not found", ...args) {
         super(message, ...args);
@@ -23,7 +31,7 @@ exports.TooManyContextsError = class TooManyContextsError extends Error {
 }
 
 exports.NoHarWriterError = class NoHarWriterError extends Error {
-    constructor(message="There is no initialized Har Writer on the page to which the Har action was applied.", ...args) {
+    constructor(message="There is no initialized Har Writer on the page to which the Har action was applied", ...args) {
         super(message, ...args);
         this.message = message;
         this.name = "NoHarWriterError";
