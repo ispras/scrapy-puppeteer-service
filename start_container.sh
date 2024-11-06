@@ -4,6 +4,7 @@
 if [ "${HEADLESS}" == "false" ]; then
   printf "%s\n%s\nn" "${VNC_PASSWORD:=password}" "${VNC_PASSWORD:=password}" | vncpasswd
   ./start_vnc.sh &
+  websockify -D 5900 localhost:5901 --web /usr/share/novnc
 fi
 
 # Start scrapy-puppeteer-service
