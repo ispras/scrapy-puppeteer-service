@@ -81,7 +81,8 @@ async function setupBrowser() {
                 args: [
                     "--no-sandbox",
                 ]
-            });
+            }
+        );
         browser.on('disconnected', setupBrowser);
         app.set('browser', browser);
     } catch (error) {
