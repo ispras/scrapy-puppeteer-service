@@ -1,3 +1,5 @@
+const exceptions = require("../helpers/exceptions");
+
 endpoint2action = {
     action: require("./action").action,
     click: require("./click").click,
@@ -12,7 +14,27 @@ endpoint2action = {
     scroll: require("./scroll").scroll,
 }
 
+/**
+ * Compose is a sequence of other actions that are performed on the page.
+ * The function does not allow body to contain compose endpoint inside.
+ *
+ * body = {
+ *      "actions": [  An array of actions
+ *          {
+ *              "endpoint": <string>,  Action endpoint
+ *              "body": <object>,  A body that is processable by action on the endpoint
+ *          },
+ *          ...,
+ *     ],
+ * }
+ */
 async function compose(page, request) {
+    // Validation
+    if (!(request.body instanceof Object)) {
+        throw new exceptions.IncorrectArgumentError("Body of compose method should be an Object.");
+    }
+
+    // Evaluation
     const originalClosePage = request.query.closePage;
     const originalBody = structuredClone(request.body);
 

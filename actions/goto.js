@@ -1,6 +1,7 @@
 const utils = require('../helpers/utils');
+const exceptions = require('../helpers/exceptions');
 
-/*
+/**
  * body = {
  *     "url": <string> URL to navigate page to. The url should include scheme, e.g. https://.
  *     "navigationOptions": { Navigation parameters which might have the following properties:
@@ -22,6 +23,11 @@ const utils = require('../helpers/utils');
  * }
  */
 exports.goto = async function goto(page, request) {
+    // Validation
+    if (!("url" in request.body)) {
+        throw new exceptions.IncorrectArgumentError("No URL provided in goto request.");
+    }
+
     await page.goto(request.body.url, request.body.navigationOptions);
     return await utils.getContents(page, request.body.waitOptions);
 }

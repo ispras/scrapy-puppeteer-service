@@ -2,7 +2,7 @@ const utils = require('../helpers/utils');
 
 const DEFAULT_TIMEOUT = 1000;  // 1 second
 
-/*
+/**
  * Method that scrolls page to a certain selector.
  * Example body:
  * body = {
