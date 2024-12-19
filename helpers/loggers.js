@@ -49,7 +49,8 @@ function createTransports(logLevel, logFilePath, logstashHost, logstashPort) {
             port: logstashPort,
             format: fileFormat,
             level: logLevel,
-        }))
+            max_connect_retries: -1,
+        }));
     }
 
     return transports;
