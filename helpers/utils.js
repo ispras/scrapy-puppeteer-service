@@ -234,4 +234,3 @@ exports.performAction = async function performAction(request, action) {
         return response;
     });
 };
-
