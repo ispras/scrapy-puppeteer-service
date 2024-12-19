@@ -6,19 +6,11 @@ const utils = require('../helpers/utils')
 const exceptions = require('../helpers/exceptions');
 
 router.post('/', async function (req, res, next) {
-    if (!req.query.contextId || !req.query.pageId) {
-        throw new exceptions.IncorrectArgumentError("No page in request");
-    }
-
     if (!process.env.TOKEN_2CAPTCHA) {
         res.status(501);
         res.send("TOKEN_2CAPTCHA is not provided!");
         next();
         return;
-    }
-
-    if (!("solve_recaptcha" in req.body)) {
-        throw new exceptions.IncorrectArgumentError("No solve_recaptcha parameter in request");
     }
 
     try {

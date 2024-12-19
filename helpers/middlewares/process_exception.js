@@ -20,7 +20,7 @@ exports.processExceptionMiddleware = async function processExceptionMiddleware(e
         res.status(400);
     } else if (err instanceof exceptions.NoHarWriterError) {
         res.status(400);
-    }else if (err instanceof exceptions.TooManyContextsError) {
+    } else if (err instanceof exceptions.TooManyContextsError) {
         res.status(429);  // Too Many Requests
     } else if (err.contextId) {  // there was a context, but something went wrong
         res.status(500);
