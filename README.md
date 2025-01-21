@@ -281,7 +281,7 @@ Example request body:
 ```json5
 {
     "waitOptions": {  // selector, xpath or timeout, same as in the goto method
-        "timeout": 5000, //default timeout is 1000ms
+        "timeout": 5000, // timeout in milliseconds, default is 30000
     },
     "solve_recaptcha": true,  // Whether to solve recaptcha on the page or not
     "close_on_empty": false,  // Whether to close the page if there was no recaptcha

@@ -1,7 +1,7 @@
 const utils = require('../helpers/utils')
 const exceptions = require("../helpers/exceptions");
 
-const DEFAULT_TIMEOUT = 1000;  // 1 second
+const DEFAULT_TIMEOUT = 30000;  // 30 seconds
 
 /**
  * The function solves recaptchas on the page.
@@ -26,7 +26,7 @@ exports.recaptchaSolver = async function recaptchaSolver(page, request) {
         recaptchaData = await page.findRecaptchas();
     }
 
-    const waitOptions = request.body.waitOptions || { timeout: DEFAULT_TIMEOUT };
+    const waitOptions = request.body.waitOptions || {timeout: DEFAULT_TIMEOUT};
     const contents = await utils.getContents(page, waitOptions);
 
     if (request.query.closePage ||
