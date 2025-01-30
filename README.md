@@ -280,8 +280,11 @@ This POST method implements recaptcha solving based on the [puppeteer-extra-plug
 Example request body:
 ```json5
 {
+    "navigationOptions": {
+        "waitUntil": "domcontentloaded",
+    },
     "waitOptions": {  // selector, xpath or timeout, same as in the goto method
-        "timeout": 5000, // timeout in milliseconds, default is 30000
+        "timeout": 5000, // timeout in milliseconds, default is 1000
     },
     "solve_recaptcha": true,  // Whether to solve recaptcha on the page or not
     "close_on_empty": false,  // Whether to close the page if there was no recaptcha
