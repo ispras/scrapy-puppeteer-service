@@ -37,13 +37,17 @@ exports.closeContexts = async function closeContexts(browser, contextIds) {
     const closePromises = [];
     for (const context of browser.browserContexts()) {
         if (contextIds.includes(context.id)) {
-            limitContext.decContextCounter();
-            timeoutContext.clearContextTimeout(context);
-            closePromises.push(context.close());
+            closePromises.push(closeSingleContext(context));
         }
     }
     await Promise.all(closePromises);
 };
+
+function closeSingleContext(context) {
+    limitContext.decContextCounter();
+    timeoutContext.clearContextTimeout(context);
+    return context.close();
+}
 
 async function wait(page, waitFor) {
     let { selector, xpath, timeout, options } = waitFor;
@@ -217,8 +221,12 @@ exports.performAction = async function performAction(request, action) {
         try {
             Object.assign(response, await action(page, request));
         } catch (err) {
-            err.contextId = response.contextId;
-            err.pageId = response.pageId;
+            if (!request.query.contextId) {
+                await closeSingleContext(page.browserContext());  // destroy new contexts on errors
+            } else {
+                err.contextId = response.contextId;
+                err.pageId = response.pageId;
+            }
             throw err;
         }
 
