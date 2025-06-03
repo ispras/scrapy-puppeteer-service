@@ -13,7 +13,7 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  * For more information about return value visit
  * https://www.npmjs.com/package/puppeteer-captcha-plugin
  */
-exports.recaptchaSolver = async function recaptchaSolver(page, request) {
+exports.cloudflareCaptchaSolver = async function cloudflareCaptchaSolver(page, request) {
     if (!("solve_cloudflare_captcha" in request.body)) {
         throw new exceptions.IncorrectArgumentError("No solve_cloudflare_captcha parameter in request");
     }
