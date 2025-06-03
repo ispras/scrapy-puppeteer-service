@@ -1,9 +1,8 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 
 const {recaptchaSolver} = require('../actions/recaptcha_solver');
-const utils = require('../helpers/utils')
-const exceptions = require('../helpers/exceptions');
+const utils = require('../helpers/utils');
 
 router.post('/', async function (req, res, next) {
     if (!process.env.TOKEN_2CAPTCHA) {

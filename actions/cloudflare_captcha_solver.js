@@ -14,31 +14,27 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  * https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-recaptcha#result-object
  */
 exports.recaptchaSolver = async function recaptchaSolver(page, request) {
-    if (!("solve_recaptcha" in request.body)) {
-        throw new exceptions.IncorrectArgumentError("No solve_recaptcha parameter in request");
+    if (!("solve_cloudflare_captcha" in request.body)) {
+        throw new exceptions.IncorrectArgumentError("No solve_cloudflare_captcha parameter in request");
     }
 
-    let recaptchaData;
+    let cloudflareCaptchaData;
 
-    if (request.body.solve_recaptcha) {
-        recaptchaData = await page.solveRecaptchas();
+    if (request.body.solve_cloudflare_captcha) {
+        cloudflareCaptchaData = await page.solveCloudflareCaptcha();
     } else {
-        recaptchaData = await page.findRecaptchas();
+        cloudflareCaptchaData = await page.findCloudflareCaptcha();
     }
 
     if (request.body.navigationOptions) {
         await page.waitForNavigation(request.body.navigationOptions);
     }
+
     const waitOptions = request.body.waitOptions || {timeout: DEFAULT_TIMEOUT};
     const contents = await utils.getContents(page, waitOptions);
 
-    if (request.query.closePage ||
-        (request.body.close_on_empty && recaptchaData['captchas'].length === 0)) {
-        await page.close();
-    }
-
     return {
         ...contents,
-        recaptcha_data: recaptchaData,
+        cloudflareCaptchaData: cloudflareCaptchaData,
     }
 }
