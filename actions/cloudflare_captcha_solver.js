@@ -4,14 +4,14 @@ const exceptions = require("../helpers/exceptions");
 const DEFAULT_TIMEOUT = 1000;  // 1 second
 
 /**
- * The function solves recaptchas on the page.
- * If there is no recaptcha on the page nothing will happen.
- * If there is a recaptcha the function solves it and then inserts the special code
+ * The function solves cloudflare captcha on the page.
+ * If there is no cloudflare captcha on the page nothing will happen.
+ * If there is a cloudflare captcha the function solves it and then inserts the special code
  * into the page automatically.
  *
- * Returns useful information about recaptcha_solving.
+ * Returns useful information about solving cloudflare captcha.
  * For more information about return value visit
- * https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-recaptcha#result-object
+ * https://www.npmjs.com/package/puppeteer-captcha-plugin
  */
 exports.recaptchaSolver = async function recaptchaSolver(page, request) {
     if (!("solve_cloudflare_captcha" in request.body)) {
