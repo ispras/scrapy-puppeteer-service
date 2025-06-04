@@ -14,13 +14,13 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  * https://www.npmjs.com/package/puppeteer-captcha-plugin
  */
 exports.cloudflareCaptchaSolver = async function cloudflareCaptchaSolver(page, request) {
-    if (!("solve_cloudflare_captcha" in request.body)) {
-        throw new exceptions.IncorrectArgumentError("No solve_cloudflare_captcha parameter in request");
+    if (!("solveCloudflareCaptcha" in request.body)) {
+        throw new exceptions.IncorrectArgumentError("No solveCloudflareCaptcha parameter in request");
     }
 
     let cloudflareCaptchaData;
 
-    if (request.body.solve_cloudflare_captcha) {
+    if (request.body.solveCloudflareCaptcha) {
         cloudflareCaptchaData = await page.solveCloudflareCaptcha();
     } else {
         cloudflareCaptchaData = await page.findCloudflareCaptcha();
@@ -35,6 +35,6 @@ exports.cloudflareCaptchaSolver = async function cloudflareCaptchaSolver(page, r
 
     return {
         ...contents,
-        cloudflareCaptchaData: cloudflareCaptchaData,
+        cloudflare_captcha_data: cloudflareCaptchaData,
     }
 }
