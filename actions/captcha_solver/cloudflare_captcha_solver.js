@@ -1,5 +1,4 @@
-const utils = require('../helpers/utils');
-const exceptions = require("../helpers/exceptions");
+const utils = require('../../helpers/utils');
 
 const DEFAULT_TIMEOUT = 1000;  // 1 second
 
@@ -14,10 +13,6 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  * https://www.npmjs.com/package/puppeteer-captcha-plugin
  */
 exports.cloudflareCaptchaSolver = async function cloudflareCaptchaSolver(page, request) {
-    if (!("solveCloudflareCaptcha" in request.body)) {
-        throw new exceptions.IncorrectArgumentError("No solveCloudflareCaptcha parameter in request");
-    }
-
     let cloudflareCaptchaData;
 
     if (request.body.solveCloudflareCaptcha) {

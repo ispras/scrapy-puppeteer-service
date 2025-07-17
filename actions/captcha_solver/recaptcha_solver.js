@@ -1,5 +1,4 @@
-const utils = require('../helpers/utils');
-const exceptions = require("../helpers/exceptions");
+const utils = require('../../helpers/utils');
 
 const DEFAULT_TIMEOUT = 1000;  // 1 second
 
@@ -12,14 +11,8 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
  * Returns useful information about recaptcha_solving.
  * For more information about return value visit
  * https://github.com/berstend/puppeteer-extra/tree/master/packages/puppeteer-extra-plugin-recaptcha#result-object
- *
- * @deprecated Since version 0.4.0. Use captchaSolver router instead.
  */
 exports.recaptchaSolver = async function recaptchaSolver(page, request) {
-    if (!("solve_recaptcha" in request.body)) {
-        throw new exceptions.IncorrectArgumentError("No solve_recaptcha parameter in request");
-    }
-
     let recaptchaData;
 
     if (request.body.solve_recaptcha) {

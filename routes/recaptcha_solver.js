@@ -4,6 +4,9 @@ const router = express.Router();
 const {recaptchaSolver} = require('../actions/recaptcha_solver');
 const utils = require('../helpers/utils');
 
+/**
+ * @deprecated Since version 0.4.0. Use captchaSolver router instead.
+ */
 router.post('/', async function (req, res, next) {
     if (!process.env.TOKEN_2CAPTCHA) {
         res.status(501);

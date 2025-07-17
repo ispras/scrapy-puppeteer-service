@@ -3,7 +3,7 @@ const exceptions = require("../helpers/exceptions");
 endpoint2action = {
     action: require("./action").action,
     click: require("./click").click,
-    cloudflare_captcha_solver: require("./cloudflare_captcha_solver").cloudflareCaptchaSolver,
+    captcha_solver: require("./captcha_solver").captchaSolver,
     fill_form: require("./fill_form").fillForm,
     back: require("./goback").goBack,
     forward: require("./goforward").goForward,

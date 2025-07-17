@@ -12,7 +12,7 @@ const AsyncLock = require('async-lock');
 
 const indexRouter = require('./routes/index');
 const composeRouter = require('./routes/compose');
-const cloudFlareCaptchaRouter = require("./routes/cloudflare_captcha_solver");
+const captchaRouter = require("./routes/captcha_solver");
 const healthCheckRouter = require('./routes/health_check');
 const gotoRouter = require('./routes/goto');
 const backRouter = require('./routes/goback');
@@ -118,7 +118,7 @@ app.use(cookieParser());
 
 app.use('/', indexRouter);
 app.use('/compose', composeRouter);
-app.use('/cloudflare_captcha_solver', cloudFlareCaptchaRouter);
+app.use('/captcha_solver', captchaRouter);
 app.use('/health_check', healthCheckRouter);
 app.use('/goto', gotoRouter);
 app.use('/back', backRouter);

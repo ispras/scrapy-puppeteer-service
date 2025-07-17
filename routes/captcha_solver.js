@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {cloudflareCaptchaSolver} = require('../actions/cloudflare_captcha_solver');
+const {captchaSolver} = require('../actions/captcha_solver');
 const utils = require('../helpers/utils');
 
 router.post('/', async function (req, res, next) {
@@ -13,7 +13,7 @@ router.post('/', async function (req, res, next) {
     }
 
     try {
-        let response = await utils.performAction(req, cloudflareCaptchaSolver);
+        let response = await utils.performAction(req, captchaSolver);
         res.header('scrapy-puppeteer-service-context-id', response.contextId);
         res.send(response)
     } catch (e) {
