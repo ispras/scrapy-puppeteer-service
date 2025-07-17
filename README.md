@@ -149,15 +149,20 @@ Example request body:
 }
 ```
 
-### **/cloudflare_captcha_solver**
+### **/captcha_solver**
 
-This POST method allows to solve cloudflare captcha on the page.
+This POST method allows to solve captchas on the page.
 Before you use it you have to enable the corresponding puppeteer-extra plugin and provide `TOKEN_2CAPTCHA` environment variable.
+Currently available captcha types:
+* Recaptcha
+* Cloudflare
 
 Example request body:
 ```json5
 {
-    "solveCloudflareCaptcha": true,  
+    "solveCloudflareCaptcha": true,
+    "solveRecaptcha": true,
+    "closeOnEmpty": false,
     "waitOptions": {  // selector, xpath or timeout, same as in the goto method
         "timeout": 5000, //default timeout is 1000ms
     },

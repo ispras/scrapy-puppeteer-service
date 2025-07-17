@@ -1,7 +1,3 @@
-const utils = require('../../helpers/utils');
-
-const DEFAULT_TIMEOUT = 1000;  // 1 second
-
 /**
  * The function solves cloudflare captcha on the page.
  * If there is no cloudflare captcha on the page nothing will happen.
@@ -15,9 +11,12 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
 exports.cloudflareCaptchaSolver = async function cloudflareCaptchaSolver(page, request) {
     let cloudflareCaptchaData;
 
+    console.log("cloudflareCaptchaSolver");
     if (request.body.solveCloudflareCaptcha) {
+        console.log("Solve CloudflareCaptcha");
         cloudflareCaptchaData = await page.solveCloudflareCaptcha();
     } else {
+        console.log("Solve CloudflareCaptcha 2222");
         cloudflareCaptchaData = await page.findCloudflareCaptcha();
     }
 
@@ -25,11 +24,7 @@ exports.cloudflareCaptchaSolver = async function cloudflareCaptchaSolver(page, r
         await page.waitForNavigation(request.body.navigationOptions);
     }
 
-    const waitOptions = request.body.waitOptions || {timeout: DEFAULT_TIMEOUT};
-    const contents = await utils.getContents(page, waitOptions);
-
     return {
-        ...contents,
-        cloudflare_captcha_data: cloudflareCaptchaData,
+        cloudflareCaptchaData: cloudflareCaptchaData,
     }
 }

@@ -1,7 +1,3 @@
-const utils = require('../../helpers/utils');
-
-const DEFAULT_TIMEOUT = 1000;  // 1 second
-
 /**
  * The function solves recaptchas on the page.
  * If there is no recaptcha on the page nothing will happen.
@@ -15,7 +11,7 @@ const DEFAULT_TIMEOUT = 1000;  // 1 second
 exports.recaptchaSolver = async function recaptchaSolver(page, request) {
     let recaptchaData;
 
-    if (request.body.solve_recaptcha) {
+    if (request.body.solveRecaptcha) {
         recaptchaData = await page.solveRecaptchas();
     } else {
         recaptchaData = await page.findRecaptchas();
@@ -24,16 +20,8 @@ exports.recaptchaSolver = async function recaptchaSolver(page, request) {
     if (request.body.navigationOptions) {
         await page.waitForNavigation(request.body.navigationOptions);
     }
-    const waitOptions = request.body.waitOptions || {timeout: DEFAULT_TIMEOUT};
-    const contents = await utils.getContents(page, waitOptions);
-
-    if (request.query.closePage ||
-        (request.body.close_on_empty && recaptchaData['captchas'].length === 0)) {
-        await page.close();
-    }
 
     return {
-        ...contents,
-        recaptcha_data: recaptchaData,
+        recaptchaData: recaptchaData,
     }
 }
