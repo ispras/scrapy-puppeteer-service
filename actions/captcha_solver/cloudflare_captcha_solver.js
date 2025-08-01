@@ -13,10 +13,8 @@ exports.cloudflareCaptchaSolver = async function cloudflareCaptchaSolver(page, r
 
     console.log("cloudflareCaptchaSolver");
     if (request.body.solveCloudflareCaptcha) {
-        console.log("Solve CloudflareCaptcha");
         cloudflareCaptchaData = await page.solveCloudflareCaptcha();
     } else {
-        console.log("Solve CloudflareCaptcha 2222");
         cloudflareCaptchaData = await page.findCloudflareCaptcha();
     }
 
