@@ -39,6 +39,7 @@ const LOG_FILE = process.env.LOG_FILE;
 const LOGSTASH_HOST = process.env.LOGSTASH_HOST;
 const LOGSTASH_PORT = process.env.LOGSTASH_PORT;
 const HEADLESS = (process.env.HEADLESS || "true").toLowerCase() === "true";
+const ACCEPT_INSECURE_CERTS = (process.env.ACCEPT_INSECURE_CERTS || "false").toLowerCase() === "true";
 const CONNECT_TIMEOUT = parseInt(process.env.CONNECT_TIMEOUT) || 180000;
 const VIEWPORT_WIDTH = parseInt(process.env.VIEWPORT_WIDTH) || 1280;
 const VIEWPORT_HEIGHT = parseInt(process.env.VIEWPORT_HEIGHT) || 720;
@@ -82,6 +83,7 @@ async function setupBrowser() {
         //TODO add more params for puppeteer launch
         const browser = await puppeteer.launch(
             {
+                acceptInsecureCerts: ACCEPT_INSECURE_CERTS,
                 headless: HEADLESS,
                 defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT },
                 timeout: CONNECT_TIMEOUT,
