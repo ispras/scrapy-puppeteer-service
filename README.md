@@ -311,6 +311,7 @@ Here we list them all with their purpose.
 * `LOGSTASH_HOST = undefined` - host address of the logstash
 * `LOGSTASH_PORT = undefined` - port of the logstash server
 * `HEADLESS = true` - should the service use the "headless" mode
+* `ACCEPT_INSECURE_CERTS = false` - should the service allow navigation on sites with insecure certificate
 * `CONNECT_TIMEOUT = 180000` - Maximum time in milliseconds to wait for the browser to start
 * `VIEWPORT_WIDTH = 1280` - width of the browser's window
 * `VIEWPORT_HEIGHT = 720` - height of the browser's window
