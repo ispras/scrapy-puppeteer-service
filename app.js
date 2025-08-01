@@ -4,6 +4,7 @@ const express = require('express');
 const puppeteer = require('puppeteer-extra')
 
 const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
+const CaptchaPlugin = require('puppeteer-captcha-plugin').CloudflareCaptchaSolverPlugin
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -11,6 +12,7 @@ const AsyncLock = require('async-lock');
 
 const indexRouter = require('./routes/index');
 const composeRouter = require('./routes/compose');
+const captchaRouter = require("./routes/captcha_solver");
 const healthCheckRouter = require('./routes/health_check');
 const gotoRouter = require('./routes/goto');
 const backRouter = require('./routes/goback');
@@ -56,7 +58,12 @@ async function setupBrowser() {
                         token: TOKEN_2CAPTCHA
                     }
                 })
-            )
+            );
+            puppeteer.use(
+                new CaptchaPlugin({
+                    token: TOKEN_2CAPTCHA,
+                })
+            );
         }
     } catch (error) {
         console.error('Failed to proceed 2captcha token:', error);
@@ -113,6 +120,7 @@ app.use(cookieParser());
 
 app.use('/', indexRouter);
 app.use('/compose', composeRouter);
+app.use('/captcha_solver', captchaRouter);
 app.use('/health_check', healthCheckRouter);
 app.use('/goto', gotoRouter);
 app.use('/back', backRouter);

@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-const {recaptchaSolver} = require('../actions/recaptcha_solver');
+const {captchaSolver} = require('../actions/captcha_solver');
 const utils = require('../helpers/utils');
 
-/**
- * @deprecated Since version 0.4.0. Use captchaSolver router instead.
- */
 router.post('/', async function (req, res, next) {
     if (!process.env.TOKEN_2CAPTCHA) {
         res.status(501);
@@ -16,7 +13,7 @@ router.post('/', async function (req, res, next) {
     }
 
     try {
-        let response = await utils.performAction(req, recaptchaSolver);
+        let response = await utils.performAction(req, captchaSolver);
         res.header('scrapy-puppeteer-service-context-id', response.contextId);
         res.send(response)
     } catch (e) {

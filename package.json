@@ -1,6 +1,6 @@
 {
   "name": "scrapy-puppeteer-service",
-  "version": "0.3.13",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -21,6 +21,7 @@
     "morgan": "~1.10.0",
     "npm-run-all": "^4.1.5",
     "puppeteer": "^23.4.0",
+    "puppeteer-captcha-plugin": "^0.1.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-recaptcha": "^3.6.8",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
