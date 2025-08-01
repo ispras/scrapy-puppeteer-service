@@ -4,7 +4,7 @@ const express = require('express');
 const puppeteer = require('puppeteer-extra')
 
 const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
-const captchaPlugin = require('puppeteer-captcha-plugin')
+const CaptchaPlugin = require('puppeteer-captcha-plugin').CloudflareCaptchaSolverPlugin
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -60,7 +60,7 @@ async function setupBrowser() {
                 })
             );
             puppeteer.use(
-                new captchaPlugin.CloudflareCaptchaSolverPlugin({
+                new CaptchaPlugin({
                     token: TOKEN_2CAPTCHA,
                 })
             );
