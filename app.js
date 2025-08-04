@@ -1,10 +1,14 @@
+async function loadESMModule(moduleName) {
+    return import(moduleName);
+}
+
 const { createPuppeteerMetrics } = require('./helpers/meter');  // Essential to put it first
 
 const express = require('express');
 const puppeteer = require('puppeteer-extra')
 
 const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
-const CaptchaPlugin = require('puppeteer-captcha-plugin').CloudflareCaptchaSolverPlugin
+const CaptchaPlugin = loadESMModule('puppeteer-captcha-plugin');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -60,7 +64,7 @@ async function setupBrowser() {
                 })
             );
             puppeteer.use(
-                new CaptchaPlugin({
+                new (await CaptchaPlugin).CloudflareCaptchaSolverPlugin({
                     token: TOKEN_2CAPTCHA,
                 })
             );
@@ -87,12 +91,39 @@ async function setupBrowser() {
                 headless: HEADLESS,
                 defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT },
                 timeout: CONNECT_TIMEOUT,
+                channel: "chrome",
                 args: [
-                    "--no-sandbox",
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-infobars',
+                    '--no-zygote',
+                    '--no-first-run',
+                    '--window-position=0,0',
+                    '--ignore-certificate-errors',
+                    '--ignore-certificate-errors-skip-list',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--disable-gpu',
+                    '--hide-scrollbars',
+                    '--disable-notifications',
+                    '--disable-background-timer-throttling',
+                    '--disable-backgrounding-occluded-windows',
+                    '--disable-breakpad',
+                    '--disable-component-extensions-with-background-pages',
+                    '--disable-extensions',
+                    '--disable-features=TranslateUI,BlinkGenPropertyTrees',
+                    '--disable-ipc-flooding-protection',
+                    '--disable-renderer-backgrounding',
+                    '--enable-features=NetworkService,NetworkServiceInProcess',
+                    '--force-color-profile=srgb',
+                    '--metrics-recording-only',
+                    '--mute-audio'
                 ]
             }
         );
         browser.on('disconnected', setupBrowser);
+        let ver = await browser.version();
+        console.log(ver);
         app.set('browser', browser);
     } catch (error) {
         process.exit(1);
