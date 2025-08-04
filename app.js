@@ -92,7 +92,7 @@ async function setupBrowser() {
                 defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT },
                 timeout: CONNECT_TIMEOUT,
                 args: [
-                    '--no-sandbox'
+                    "--no-sandbox"
                 ]
             }
         );
