@@ -1,14 +1,10 @@
-async function loadESMModule(moduleName) {
-    return import(moduleName);
-}
-
 const { createPuppeteerMetrics } = require('./helpers/meter');  // Essential to put it first
 
 const express = require('express');
 const puppeteer = require('puppeteer-extra')
 
 const RecaptchaPlugin = require('puppeteer-extra-plugin-recaptcha')
-const CaptchaPlugin = loadESMModule('puppeteer-captcha-plugin');
+const CaptchaPlugin = require('puppeteer-captcha-plugin').CloudflareCaptchaSolverPlugin
 const StealthPlugin = require('puppeteer-extra-plugin-stealth')
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -64,7 +60,7 @@ async function setupBrowser() {
                 })
             );
             puppeteer.use(
-                new (await CaptchaPlugin).CloudflareCaptchaSolverPlugin({
+                new CaptchaPlugin({
                     token: TOKEN_2CAPTCHA,
                 })
             );
@@ -92,7 +88,7 @@ async function setupBrowser() {
                 defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT },
                 timeout: CONNECT_TIMEOUT,
                 args: [
-                    "--no-sandbox"
+                    "--no-sandbox",
                 ]
             }
         );
