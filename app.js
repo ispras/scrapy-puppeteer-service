@@ -91,39 +91,12 @@ async function setupBrowser() {
                 headless: HEADLESS,
                 defaultViewport: { width: VIEWPORT_WIDTH, height: VIEWPORT_HEIGHT },
                 timeout: CONNECT_TIMEOUT,
-                channel: "chrome",
                 args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-infobars',
-                    '--no-zygote',
-                    '--no-first-run',
-                    '--window-position=0,0',
-                    '--ignore-certificate-errors',
-                    '--ignore-certificate-errors-skip-list',
-                    '--disable-dev-shm-usage',
-                    '--disable-accelerated-2d-canvas',
-                    '--disable-gpu',
-                    '--hide-scrollbars',
-                    '--disable-notifications',
-                    '--disable-background-timer-throttling',
-                    '--disable-backgrounding-occluded-windows',
-                    '--disable-breakpad',
-                    '--disable-component-extensions-with-background-pages',
-                    '--disable-extensions',
-                    '--disable-features=TranslateUI,BlinkGenPropertyTrees',
-                    '--disable-ipc-flooding-protection',
-                    '--disable-renderer-backgrounding',
-                    '--enable-features=NetworkService,NetworkServiceInProcess',
-                    '--force-color-profile=srgb',
-                    '--metrics-recording-only',
-                    '--mute-audio'
+                    '--no-sandbox'
                 ]
             }
         );
         browser.on('disconnected', setupBrowser);
-        let ver = await browser.version();
-        console.log(ver);
         app.set('browser', browser);
     } catch (error) {
         process.exit(1);
