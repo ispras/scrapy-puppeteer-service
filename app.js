@@ -82,10 +82,6 @@ async function setupBrowser() {
 
     try {
         //TODO add more params for puppeteer launch
-        console.log("BROWSER_EXTRA_ARGS:", [
-                    "--no-sandbox",
-                    ...BROWSER_EXTRA_ARGS,
-                ]);
         const browser = await puppeteer.launch(
             {
                 acceptInsecureCerts: ACCEPT_INSECURE_CERTS,
