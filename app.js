@@ -89,6 +89,7 @@ async function setupBrowser() {
                 timeout: CONNECT_TIMEOUT,
                 args: [
                     "--no-sandbox",
+                    ...process.argv.slice(2),
                 ]
             }
         );

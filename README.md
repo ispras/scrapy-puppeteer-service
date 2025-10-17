@@ -344,6 +344,7 @@ Here we list them all with their purpose.
 * `CONTEXT_TIMEOUT = 600000` - time (in ms) after the passage of which the context would close
 * `PROMETHEUS_HOST = undefined` - host address of the metrics endpoint, if not defined then assigns to "localhost"
 * `PROMETHEUS_PORT = undefined` - port of address of the metrics endpoint, if not defined then assigns to "9464"
+* `BROWSER_EXTRA_ARGS = undefined` - extra arguments to browser. Applicable only to docker container. If you want to provide extra browser arguments via console just put them after `yarn run`.
 
 ## Notes on memory usage
 
