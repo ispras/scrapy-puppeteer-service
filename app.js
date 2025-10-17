@@ -47,6 +47,7 @@ const TOKEN_2CAPTCHA = process.env.TOKEN_2CAPTCHA;
 const STEALTH_BROWSING = (process.env.STEALTH_BROWSING || "true").toLowerCase() === "true";
 const MAX_CONCURRENT_CONTEXTS = process.env.MAX_CONCURRENT_CONTEXTS === "Infinity" ? Infinity : parseInt(process.env.MAX_CONCURRENT_CONTEXTS);
 const CONTEXT_TIMEOUT = parseInt(process.env.CONTEXT_TIMEOUT) || 600000;  // 10 minutes
+const BROWSER_EXTRA_ARGS = (process.env.BROWSER_EXTRA_ARGS || "").split(",");
 
 async function setupBrowser() {
     try {
@@ -81,6 +82,10 @@ async function setupBrowser() {
 
     try {
         //TODO add more params for puppeteer launch
+        console.log("BROWSER_EXTRA_ARGS:", [
+                    "--no-sandbox",
+                    ...BROWSER_EXTRA_ARGS,
+                ]);
         const browser = await puppeteer.launch(
             {
                 acceptInsecureCerts: ACCEPT_INSECURE_CERTS,
@@ -89,6 +94,7 @@ async function setupBrowser() {
                 timeout: CONNECT_TIMEOUT,
                 args: [
                     "--no-sandbox",
+                    ...BROWSER_EXTRA_ARGS,
                 ]
             }
         );
