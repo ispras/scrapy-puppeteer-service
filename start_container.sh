@@ -8,7 +8,7 @@ if [ "${HEADLESS}" == "false" ]; then
 fi
 
 # Start scrapy-puppeteer-service
-yarn start
+yarn start ${BROWSER_EXTRA_ARGS}
 
 # Wait for any process to exit
 wait -n
