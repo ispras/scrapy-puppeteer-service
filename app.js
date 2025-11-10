@@ -53,6 +53,9 @@ async function setupBrowser() {
         if (TOKEN_2CAPTCHA) {  // If token is given then RecaptchaPlugin is activated
             puppeteer.use(
                 RecaptchaPlugin({
+                    // We will see Error: [object Object] in logs because PuppeteerExtraPluginRecaptcha is build badly with `Error(response.error)`
+                    // https://stackoverflow.com/questions/58252067/pass-an-object-with-js-throw-new-error-in-node
+                    throwOnError: true,
                     provider: {
                         id: '2captcha',
                         token: TOKEN_2CAPTCHA
