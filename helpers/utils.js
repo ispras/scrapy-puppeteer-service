@@ -1,10 +1,10 @@
 const {Browser} = require('puppeteer');
 const { proxyRequest } = require('puppeteer-proxy');
-const PuppeteerHar = require('puppeteer-har');
 
 const exceptions = require("./exceptions");
 const limitContext = require('./limit_context');
 const timeoutContext = require('./timeout_context');
+const { HarWriter } = require('./HarWriter');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
@@ -110,7 +110,7 @@ async function newPage(context, request) {
     const page = await context.newPage();
 
     if (request.body.harRecording){
-        const harWriter = new PuppeteerHar(page);
+        const harWriter = new HarWriter(page);
         await harWriter.start();
         page.harWriter = harWriter;
     }
