@@ -3,22 +3,13 @@ const { promisify } = require('util');
 const { harFromMessages } = require('chrome-har');
 
 
-
-class HarWriterConfig {
-    constructor() {
-        this.recordResponses = true;
-    }
-}
-
 class HarWriter {
-    constructor(page, config = null) {
+    constructor(page) {
         this.page = page;
         this.client = null;
         this.addResponseBodyPromises = [];
         this.events = [];
         this.responseMap = new Map();
-
-        this.config = new HarWriterConfig();
     }
 
     async start() {
@@ -50,7 +41,7 @@ class HarWriter {
         await Promise.all(this.addResponseBodyPromises);
 
         const harObject = harFromMessages(this.events, {
-            includeTextFromResponseBody: this.config.recordResponses !== false
+            includeTextFromResponseBody: true
         });
 
         this.events = [];
@@ -83,8 +74,6 @@ class HarWriter {
     }
 
     #handleResponseReceived(harEvent) {
-        if (this.config.recordResponses === false) return;
-
         const response = harEvent.params.response;
         const requestId = harEvent.params.requestId;
 
@@ -108,8 +97,6 @@ class HarWriter {
     }
 
     #handleLoadingFinished(params) {
-        if (this.config.recordResponses === false) return;
-
         const requestId = params.requestId;
         const responseInfo = this.responseMap.get(requestId);
 
@@ -140,4 +127,4 @@ class HarWriter {
     }
 }
 
-module.exports = { HarWriter, HarWriterConfig };
+module.exports = { HarWriter };
