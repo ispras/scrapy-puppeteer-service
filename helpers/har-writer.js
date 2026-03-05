@@ -37,7 +37,7 @@ class HarWriter {
         });
     }
 
-    async stop(path = null) {
+    async stop() {
         await Promise.all(this.addResponseBodyPromises);
 
         const harObject = harFromMessages(this.events, {
@@ -52,12 +52,7 @@ class HarWriter {
             await this.client.detach();
         }
 
-        if (path) {
-            await promisify(fs.writeFile)(path, JSON.stringify(harObject, null, 2));
-            return path;
-        } else {
-            return harObject;
-        }
+        return harObject;
     }
 
     #handleEvent(method, params) {
@@ -69,7 +64,7 @@ class HarWriter {
         }
 
         if (method === 'Network.loadingFinished') {
-            this.#handleLoadingFinished(params);
+            this.#handleLoadingFinished(harEvent);
         }
     }
 
@@ -96,8 +91,8 @@ class HarWriter {
             !response.mimeType.includes('application/octet-stream');
     }
 
-    #handleLoadingFinished(params) {
-        const requestId = params.requestId;
+    #handleLoadingFinished(harEvent) {
+        const requestId = harEvent.params.requestId;
         const responseInfo = this.responseMap.get(requestId);
 
         if (responseInfo && !responseInfo.bodyFetched) {
