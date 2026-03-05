@@ -4,7 +4,7 @@ const { proxyRequest } = require('puppeteer-proxy');
 const exceptions = require("./exceptions");
 const limitContext = require('./limit_context');
 const timeoutContext = require('./timeout_context');
-const { HarWriter } = require('./HarWriter');
+const { HarWriter } = require('./har-writer');
 
 const PROXY_URL_KEY = 'puppeteer-service-proxy-url'
 
